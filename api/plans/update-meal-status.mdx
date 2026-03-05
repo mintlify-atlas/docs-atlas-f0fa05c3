@@ -1,0 +1,175 @@
+---
+title: 'Update Meal Status'
+description: 'Mark a meal as consumed or not consumed'
+icon: 'circle-check'
+---
+
+## Endpoint
+
+```
+PUT /api/meal-detail/{meal_detail_id}/status
+```
+
+Update the consumption status of a specific meal. This is used in the Dashboard to track which meals have been eaten.
+
+## Path Parameters
+
+<ParamField path="meal_detail_id" type="integer" required>
+  The unique identifier of the meal detail to update
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="is_consumed" type="boolean" required>
+  Whether the meal has been consumed (true) or not (false)
+</ParamField>
+
+## Authentication
+
+This endpoint requires authentication. Include the JWT token in the Authorization header.
+
+## Response
+
+Returns the updated meal detail with the new consumption status.
+
+<ResponseField name="id" type="integer">
+  Meal detail ID
+</ResponseField>
+
+<ResponseField name="daily_menu_id" type="integer">
+  ID of the daily menu this meal belongs to
+</ResponseField>
+
+<ResponseField name="meal_type_id" type="integer">
+  Type of meal (breakfast, lunch, dinner, snack)
+</ResponseField>
+
+<ResponseField name="recipe_id" type="integer">
+  ID of the recipe assigned to this meal
+</ResponseField>
+
+<ResponseField name="is_consumed" type="boolean">
+  Whether the meal has been consumed
+</ResponseField>
+
+<ResponseField name="recipe" type="object">
+  Complete recipe information
+  
+  <Expandable title="recipe properties">
+    <ResponseField name="id" type="integer">
+      Recipe ID
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Recipe name
+    </ResponseField>
+    <ResponseField name="calories" type="number">
+      Total calories
+    </ResponseField>
+    <ResponseField name="protein_content" type="number">
+      Protein in grams
+    </ResponseField>
+    <ResponseField name="carbohydrate_content" type="number">
+      Carbohydrates in grams
+    </ResponseField>
+    <ResponseField name="fat_content" type="number">
+      Fat in grams
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example Request
+
+<CodeGroup>
+
+```bash cURL
+curl -X PUT "http://localhost:8000/api/meal-detail/123/status?is_consumed=true" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+```javascript JavaScript
+const mealDetailId = 123;
+const isConsumed = true;
+
+const response = await fetch(
+  `http://localhost:8000/api/meal-detail/${mealDetailId}/status?is_consumed=${isConsumed}`,
+  {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  }
+);
+
+const updatedMeal = await response.json();
+```
+
+```python Python
+import requests
+
+meal_detail_id = 123
+is_consumed = True
+
+url = f"http://localhost:8000/api/meal-detail/{meal_detail_id}/status"
+params = {"is_consumed": is_consumed}
+headers = {"Authorization": f"Bearer {token}"}
+
+response = requests.put(url, params=params, headers=headers)
+meal = response.json()
+```
+
+</CodeGroup>
+
+## Example Response
+
+```json 200 OK
+{
+  "id": 123,
+  "daily_menu_id": 45,
+  "meal_type_id": 1,
+  "recipe_id": 789,
+  "is_consumed": true,
+  "recipe": {
+    "id": 789,
+    "name": "Oatmeal with Berries",
+    "calories": 320.5,
+    "protein_content": 12.3,
+    "carbohydrate_content": 54.2,
+    "fat_content": 8.1
+  }
+}
+```
+
+## Error Responses
+
+<Accordion title="404 Not Found">
+  The meal detail with the specified ID does not exist.
+
+  ```json
+  {
+    "detail": "Meal detail not found"
+  }
+  ```
+</Accordion>
+
+<Accordion title="401 Unauthorized">
+  Missing or invalid authentication token.
+
+  ```json
+  {
+    "detail": "Could not validate credentials"
+  }
+  ```
+</Accordion>
+
+## Usage in Dashboard
+
+This endpoint is called when users toggle the consumption status of meals in the Dashboard:
+
+1. User views their daily meal plan
+2. User clicks the checkbox/toggle on a meal card
+3. Frontend calls this endpoint with the meal_detail_id and new is_consumed status
+4. Dashboard updates to reflect the new nutritional totals
+
+<Tip>
+  The Dashboard automatically recalculates daily macronutrient totals when meal status is updated.
+</Tip>

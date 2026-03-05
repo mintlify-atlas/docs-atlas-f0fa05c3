@@ -100,7 +100,8 @@
             "pages": [
               "api/authentication/overview",
               "api/authentication/register",
-              "api/authentication/login"
+              "api/authentication/login",
+              "api/authentication/get-user"
             ]
           },
           {
@@ -116,7 +117,8 @@
             "pages": [
               "api/plans/get-plan",
               "api/plans/create-plan",
-              "api/plans/update-meal"
+              "api/plans/update-meal",
+              "api/plans/update-meal-status"
             ]
           },
           {
