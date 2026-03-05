@@ -1,0 +1,293 @@
+---
+title: Generating Meal Plans
+description: Learn how to generate personalized weekly meal plans with SmartEat AI
+---
+
+SmartEat AI generates complete 7-day meal plans tailored to your profile, dietary restrictions, and calorie targets. The intelligent system ensures variety, nutritional balance, and compliance with your preferences.
+
+## Prerequisites
+
+Before generating a meal plan:
+
+<Steps>
+
+### Complete Your Profile
+
+You must have an active profile with:
+- Personal measurements and goals
+- Calorie and macro targets calculated
+- Dietary preferences configured
+
+### Understand the Process
+
+The AI will:
+- Filter recipes matching your diet types and restrictions
+- Calculate calorie ranges for each meal type
+- Select recipes that fit your daily targets
+- Ensure variety across the week (no recipe repeats within 6 days)
+
+</Steps>
+
+<Note>
+Generating a plan deactivates any existing active plan and replaces it with the new 7-day menu.
+</Note>
+
+## How Meal Plans Are Generated
+
+### Step 1: Recipe Filtering
+
+The system identifies compatible recipes based on:
+
+**Diet Type Matching**
+- Recipes tagged with your selected diet types (vegan, vegetarian, high protein, etc.)
+- For vegan/vegetarian diets, AI verification ensures ingredients comply
+
+**Meal Type Classification**
+- Breakfast, lunch, dinner, and snack categories
+- Each recipe is pre-tagged for appropriate meal times
+
+**Calorie Range Filtering**
+- Recipes within acceptable calorie ranges for each meal type
+- Ranges calculated based on your daily target and number of meals
+
+**Restriction Compliance**
+- AI-powered ingredient analysis checks each recipe against your restrictions
+- Only recipes that pass validation are included
+
+<Tip>
+The more recipes available that match your criteria, the more variety your plan will have. Consider being flexible with restrictions if your plans feel repetitive.
+</Tip>
+
+### Step 2: Calorie Distribution
+
+Your daily calories are distributed across meals based on optimal eating patterns:
+
+**3 Meals per Day**
+- Breakfast: 30%
+- Lunch: 40%
+- Dinner: 30%
+
+**4 Meals per Day**
+- Breakfast: 25%
+- Lunch: 30%
+- Snack: 15%
+- Dinner: 30%
+
+**5 Meals per Day**
+- Breakfast: 20%
+- Morning Snack: 10%
+- Lunch: 30%
+- Afternoon Snack: 10%
+- Dinner: 30%
+
+**6 Meals per Day**
+- Breakfast: 20%
+- Morning Snack: 10%
+- Lunch: 25%
+- Afternoon Snack: 10%
+- Dinner: 25%
+- Evening Snack: 10%
+
+### Step 3: Recipe Selection
+
+For each meal of each day, the algorithm:
+
+1. **Identifies candidates**: Gets all recipes matching the meal type and diet
+2. **Checks recent usage**: Excludes recipes used in the past 6 days
+3. **Validates calorie range**: Ensures the recipe fits the meal's target (within 50-130% of target)
+4. **Selects optimal match**: Chooses the recipe closest to the target calories
+5. **Tracks usage**: Records the recipe to prevent near-term repetition
+
+<Warning>
+If insufficient recipes meet your criteria, plan generation will fail. You may need to relax some restrictions or add more diet type options.
+</Warning>
+
+### Step 4: Plan Creation
+
+Once all 7 days are populated:
+
+1. **Current plan deactivated**: Your existing active plan is marked inactive
+2. **New plan created**: A new plan record is generated with all daily menus
+3. **Meals scheduled**: Each meal is assigned a schedule order (1-6) within its day
+4. **Status initialized**: All meals start with "pending" status (0)
+
+## Generating Your Plan
+
+<Steps>
+
+### Via AI Chat Assistant
+
+The easiest method is through natural language:
+
+```
+"Generate a meal plan for me"
+"Create my weekly menu"
+"I need a new plan"
+"Make me a 7-day plan"
+```
+
+The AI assistant will:
+1. Retrieve your profile and preferences
+2. Filter compatible recipes using AI
+3. Generate the 7-day plan
+4. Confirm successful creation
+
+<Tip>
+You can ask the AI to regenerate if you're not satisfied with the initial plan.
+</Tip>
+
+### Via API (For Developers)
+
+Direct API access for programmatic generation:
+
+```http
+POST /api/plan
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "daily_menus": [
+    {
+      "day_of_week": 1,
+      "meal_details": [
+        {
+          "recipe_id": 123,
+          "schedule": 1,
+          "status": 0,
+          "meal_type": "breakfast"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Using AI Tools
+
+The `generate_weekly_plan` tool is automatically called by the chat assistant when you request a new plan. It handles all the complexity of filtering, selection, and creation.
+
+</Steps>
+
+## What Happens During Generation
+
+### AI-Powered Filtering
+
+For users with vegan/vegetarian diets or specific restrictions:
+
+1. **Initial database query**: Retrieves up to 100 candidate recipes per meal type
+2. **AI validation**: Each recipe's ingredients are analyzed by the LLM
+3. **Compliance check**: Only recipes that comply with all restrictions proceed
+4. **Limit application**: Up to 50 validated recipes per meal type are used
+
+<Note>
+AI filtering ensures accuracy but increases generation time. Plans typically generate in 10-30 seconds.
+</Note>
+
+### Variety Optimization
+
+The 6-day repetition prevention ensures:
+- You won't see the same recipe twice in one week
+- Diverse nutrient intake across the week
+- More enjoyable eating experience
+
+### Nutritional Balance
+
+Each recipe contributes:
+- **Calories**: Tracked against daily target
+- **Protein**: Supports muscle maintenance/growth goals
+- **Carbohydrates**: Provides energy based on activity level
+- **Fat**: Supplies essential fatty acids and hormones
+
+## Viewing Your Generated Plan
+
+<Steps>
+
+### Check Plan Status
+
+Ask the AI assistant:
+```
+"Show my plan"
+"What's my menu this week?"
+"View my meal plan"
+```
+
+### Review Daily Breakdown
+
+Your plan includes:
+- **7 days**: Monday through Sunday
+- **All meals**: Complete daily meal schedules
+- **Recipe details**: Name, calories, protein, carbs, and fat for each recipe
+- **Links**: Recipe URLs and images where available
+
+### Understand the Schedule
+
+Meals are numbered 1-6 based on your configured meals per day:
+- Meal 1: First meal of the day
+- Meal 2: Second meal
+- And so on...
+
+</Steps>
+
+## Troubleshooting Plan Generation
+
+### "No recipes available that meet restrictions"
+
+**Cause**: Insufficient recipes match your diet, restrictions, and calorie ranges.
+
+**Solutions**:
+- Remove or reduce dietary restrictions
+- Add more diet type options
+- Adjust your calorie targets (may be too narrow)
+- Contact support if the recipe database needs expansion
+
+### "Could not generate plan (not enough recipes)"
+
+**Cause**: Fewer than 7 days could be populated with non-repeating recipes.
+
+**Solutions**:
+- Increase acceptable diet types
+- Reduce the number of restrictions
+- Adjust your meals per day setting
+
+### Plan Generated but Lacking Variety
+
+**Cause**: Limited recipe pool for your specific criteria.
+
+**Solutions**:
+- Consider being more flexible with food preferences
+- Accept a broader calorie range
+- Add more cuisines to your taste preferences
+
+<Warning>
+Very restrictive profiles (e.g., vegan + gluten-free + nut-free + low-carb) may have difficulty generating plans due to limited compatible recipes.
+</Warning>
+
+## Plan Lifecycle
+
+1. **Generation**: New plan created and marked active
+2. **Active**: Currently in use, displayed to user
+3. **Deactivated**: Replaced when a new plan is generated
+
+<Note>
+Only one plan can be active at a time per user. Previous plans are preserved but marked inactive.
+</Note>
+
+## Best Practices
+
+- **Review before starting**: Check your plan before beginning the week
+- **Generate weekly**: Create new plans regularly for continued variety
+- **Use the chat**: Ask the AI to modify individual meals instead of regenerating entire plans
+- **Track compliance**: Mark meals as completed as you go
+- **Adjust as needed**: Use the AI to swap meals that don't fit your schedule
+
+## Next Steps
+
+After generating your plan:
+
+- [Track your nutrition](/guide/tracking-nutrition) as you complete meals
+- [Use the AI chat](/guide/using-chat) to make adjustments
+- Update your profile if your goals or measurements change
+
+<Tip>
+The AI can modify individual meals within your plan without regenerating everything. Just ask!
+</Tip>

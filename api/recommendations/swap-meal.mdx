@@ -1,0 +1,256 @@
+---
+title: 'Swap Meal Recommendation'
+api: 'POST /api/ml/swap-recipe'
+---
+
+Swap a recipe in your meal plan with a similar alternative that matches your dietary preferences and nutritional goals.
+
+## Authentication
+
+This endpoint requires Bearer token authentication. Include your access token in the Authorization header:
+
+```
+Authorization: Bearer <your_access_token>
+```
+
+## Request
+
+### Query Parameters
+
+<ParamField query="recipe_id" type="integer" required>
+  The external recipe ID of the meal you want to swap. This is the `recipe_id` field from the recipe object, not the database `id`.
+</ParamField>
+
+<ParamField query="meal_label" type="string" required>
+  The meal type for which you want a replacement. Must be one of:
+  - `breakfast`
+  - `lunch`
+  - `dinner`
+  - `snack`
+</ParamField>
+
+<ParamField query="n_search" type="integer" default="550">
+  The number of similar recipes to search through before filtering. Higher values increase the likelihood of finding a good match but may slow down the response. Range: 1-1000
+</ParamField>
+
+## Response
+
+Returns a recipe object that is nutritionally similar to the original but matches your dietary requirements.
+
+<ResponseField name="id" type="integer">
+  Database ID of the recommended recipe
+</ResponseField>
+
+<ResponseField name="recipe_id" type="integer">
+  External recipe ID from the dataset
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Name of the recipe
+  
+  Example: `"Mediterranean Chicken Bowl"`
+</ResponseField>
+
+<ResponseField name="calories" type="integer">
+  Total calories per serving
+  
+  Example: `480`
+</ResponseField>
+
+<ResponseField name="protein" type="integer">
+  Protein content in grams
+  
+  Example: `35`
+</ResponseField>
+
+<ResponseField name="carbs" type="integer">
+  Carbohydrate content in grams
+  
+  Example: `45`
+</ResponseField>
+
+<ResponseField name="fat" type="integer">
+  Fat content in grams
+  
+  Example: `18`
+</ResponseField>
+
+<ResponseField name="image_url" type="string" nullable>
+  URL to the recipe image
+  
+  Example: `"https://example.com/recipes/mediterranean-bowl.jpg"`
+</ResponseField>
+
+<ResponseField name="recipe_url" type="string" nullable>
+  URL to the full recipe details and instructions
+  
+  Example: `"https://example.com/recipes/mediterranean-bowl"`
+</ResponseField>
+
+<ResponseField name="ingredients" type="string">
+  Comma-separated list of ingredients
+  
+  Example: `"chicken breast, quinoa, cherry tomatoes, cucumber, feta cheese, olive oil, lemon"`
+</ResponseField>
+
+<ResponseField name="meal_types" type="array">
+  Array of meal type objects indicating when this recipe is suitable
+  
+  <Expandable title="Meal type object">
+    <ResponseField name="id" type="integer">
+      Meal type ID
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+      Meal type name (breakfast, lunch, dinner, snack)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="diet_types" type="array">
+  Array of diet type objects this recipe belongs to
+  
+  <Expandable title="Diet type object">
+    <ResponseField name="id" type="integer">
+      Diet type ID
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+      Diet type name (high_protein, vegan, vegetarian, low_carb, etc.)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="assigned_meal_type" type="string">
+  The meal label that was requested in the swap
+  
+  Example: `"dinner"`
+</ResponseField>
+
+<ResponseField name="distance" type="number">
+  Similarity score from the ML model. Lower values indicate higher similarity to the original recipe.
+  
+  Example: `0.234`
+</ResponseField>
+
+## Example Request
+
+```bash cURL
+curl -X POST 'https://api.smarteat.ai/api/ml/swap-recipe?recipe_id=12345&meal_label=dinner&n_search=550' \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+```python Python
+import requests
+
+url = "https://api.smarteat.ai/api/ml/swap-recipe"
+headers = {
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+params = {
+    "recipe_id": 12345,
+    "meal_label": "dinner",
+    "n_search": 550
+}
+
+response = requests.post(url, headers=headers, params=params)
+print(response.json())
+```
+
+```javascript JavaScript
+const params = new URLSearchParams({
+  recipe_id: '12345',
+  meal_label: 'dinner',
+  n_search: '550'
+});
+
+const response = await fetch(`https://api.smarteat.ai/api/ml/swap-recipe?${params}`, {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  }
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+## Example Response
+
+```json 200 - Success
+{
+  "id": 847,
+  "recipe_id": 67890,
+  "name": "Mediterranean Chicken Bowl",
+  "calories": 480,
+  "protein": 35,
+  "carbs": 45,
+  "fat": 18,
+  "image_url": "https://example.com/recipes/mediterranean-bowl.jpg",
+  "recipe_url": "https://example.com/recipes/mediterranean-bowl",
+  "ingredients": "chicken breast, quinoa, cherry tomatoes, cucumber, feta cheese, olive oil, lemon, red onion, kalamata olives",
+  "meal_types": [
+    {
+      "id": 2,
+      "name": "lunch"
+    },
+    {
+      "id": 3,
+      "name": "dinner"
+    }
+  ],
+  "diet_types": [
+    {
+      "id": 1,
+      "name": "high_protein"
+    },
+    {
+      "id": 5,
+      "name": "low_calorie"
+    }
+  ],
+  "assigned_meal_type": "dinner",
+  "distance": 0.187
+}
+```
+
+```json 404 - No Match Found
+{
+  "detail": "No similar recipe found for this meal type"
+}
+```
+
+```json 401 - Unauthorized
+{
+  "detail": "Invalid token payload"
+}
+```
+
+## How It Works
+
+1. **Load User Profile**: Retrieves your dietary preferences and restrictions
+2. **Get Active Plan**: Checks your current meal plan to avoid duplicate recipes
+3. **Find Similar Recipes**: Uses K-Nearest Neighbors ML model to find recipes with similar nutritional profiles
+4. **Apply Filters**:
+   - Excludes recipes already in your meal plan
+   - Filters by the requested meal type (breakfast, lunch, dinner, snack)
+   - Ensures compatibility with your diet types (e.g., vegan, high-protein)
+5. **Calculate Distance**: Measures similarity in scaled nutritional feature space
+6. **Random Selection**: If multiple good matches exist, randomly selects one for variety
+
+## Notes
+
+- The algorithm searches through up to `n_search` neighbors (default 550)
+- Recipes already in your active meal plan are automatically excluded
+- The swap respects your dietary restrictions from your profile
+- Lower `distance` values indicate closer nutritional similarity
+- If no suitable match is found, a 404 error is returned
+- The ML model uses standardized scaling for fair comparison across nutritional metrics
+- Diet type filtering ensures recommendations align with your preferences (e.g., vegan users only get vegan recipes)
+
+## Tips for Best Results
+
+- Use higher `n_search` values (700-1000) if you have strict dietary restrictions
+- Use lower `n_search` values (300-400) for faster responses when flexibility is acceptable
+- Ensure your profile has diet types set for more accurate filtering
+- The `distance` metric helps you understand how similar the swap is nutritionally

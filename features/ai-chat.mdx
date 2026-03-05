@@ -1,0 +1,436 @@
+---
+title: 'AI Chat (Smarty)'
+description: 'Converse with your intelligent nutrition assistant to generate plans, get recommendations, and modify meals'
+icon: 'robot'
+---
+
+## Overview
+
+The AI Chat feature connects you with **Smarty**, your intelligent virtual nutrition assistant powered by advanced AI. Through natural conversation, Smarty helps you generate personalized meal plans, modify existing meals, search for recipes, and answer nutrition questions.
+
+<img
+  className="block"
+  src="https://github.com/user-attachments/assets/9974e1a9-d7ea-4e59-8eb0-b5cbf0d9b5a7"
+  alt="SmartEat AI Chat Interface"
+/>
+
+<Note>
+  **Conversational AI**: Unlike rigid forms or menus, Smarty understands natural language. Just type what you need as if you're talking to a human nutritionist.
+</Note>
+
+## What Smarty Can Do
+
+Smarty is equipped with powerful capabilities to manage your nutrition journey:
+
+<CardGroup cols={2}>
+  <Card title="Generate Weekly Plans" icon="calendar-week">
+    Create complete 7-day nutrition plans based on your profile, goals, and preferences.
+  </Card>
+  
+  <Card title="View Current Plan" icon="eye">
+    Retrieve and display your active meal plan with all nutritional details.
+  </Card>
+  
+  <Card title="Modify Specific Meals" icon="pen-to-square">
+    Replace individual meals in your plan while maintaining nutritional balance.
+  </Card>
+  
+  <Card title="Suggest Alternatives" icon="shuffle">
+    Get alternative recipe suggestions when you don't like a planned meal.
+  </Card>
+  
+  <Card title="Search Recipes" icon="magnifying-glass">
+    Find recipes matching specific criteria (ingredients, calories, diet type, etc.).
+  </Card>
+  
+  <Card title="Update Preferences" icon="sliders">
+    Change your dietary restrictions, tastes, or preferences conversationally.
+  </Card>
+  
+  <Card title="View Profile Summary" icon="user">
+    Review your current profile settings and nutritional targets.
+  </Card>
+  
+  <Card title="Answer Questions" icon="comments-question">
+    Get nutrition advice, explanations, and guidance on healthy eating.
+  </Card>
+</CardGroup>
+
+## How to Use the AI Chat
+
+<Steps>
+  <Step title="Access the Chat">
+    Click on **🤖 Intelligent Nutrition Assistant** in the sidebar to open the chat interface.
+  </Step>
+  
+  <Step title="Start a Conversation">
+    Type your request in the message input at the bottom of the screen. Be as specific or general as you like.
+    
+    Examples:
+    - "Generate a meal plan for me"
+    - "Show me my current plan"
+    - "Find me a high-protein breakfast recipe"
+    - "Replace tomorrow's lunch with something vegetarian"
+  </Step>
+  
+  <Step title="Review Smarty's Response">
+    Smarty processes your request and responds with helpful information, suggestions, or actions taken.
+    
+    <Info>
+      Smarty may access multiple tools behind the scenes (database queries, ML models, recipe search) to fulfill your request.
+    </Info>
+  </Step>
+  
+  <Step title="Continue the Conversation">
+    Chat is conversational - you can ask follow-up questions, request modifications, or explore related topics.
+    
+    The conversation history is preserved for context.
+  </Step>
+</Steps>
+
+## Key AI Capabilities
+
+### 1. Weekly Plan Generation
+
+<Accordion title="How It Works">
+  When you ask Smarty to generate a plan, the AI:
+  
+  1. Retrieves your profile (goals, preferences, restrictions)
+  2. Calculates daily calorie and macro targets
+  3. Uses machine learning to select appropriate recipes
+  4. Distributes meals across 7 days and your chosen meal frequency
+  5. Ensures nutritional balance and variety
+  6. Saves the plan to your account
+  
+  **Example prompts:**
+  - "Create my weekly meal plan"
+  - "Generate a new plan for me"
+  - "I need a fresh meal plan starting Monday"
+</Accordion>
+
+### 2. Recipe Search by Criteria
+
+<Accordion title="How It Works">
+  Smarty can search the recipe database using natural language criteria:
+  
+  **Search by:**
+  - Ingredients ("recipes with chicken and broccoli")
+  - Calories ("low-calorie desserts under 200 calories")
+  - Macros ("high-protein, low-carb meals")
+  - Diet type ("vegan dinner ideas")
+  - Meal type ("quick breakfast recipes")
+  - Multiple criteria ("gluten-free lunch under 400 calories")
+  
+  Smarty returns a list of matching recipes with nutritional information.
+</Accordion>
+
+### 3. Meal Modification
+
+<Accordion title="How It Works">
+  Don't like a specific meal in your plan? Ask Smarty to change it:
+  
+  1. Specify which meal you want to replace (day and meal type)
+  2. Optionally provide criteria for the replacement
+  3. Smarty uses AI to find a suitable alternative
+  4. The plan updates automatically
+  
+  **Example prompts:**
+  - "Replace Wednesday's dinner"
+  - "Change tomorrow's breakfast to something with eggs"
+  - "Swap Friday lunch for a vegan option"
+</Accordion>
+
+### 4. Recipe Swap Suggestions
+
+<Accordion title="How It Works">
+  Smarty can suggest alternatives for any recipe using a KNN (K-Nearest Neighbors) machine learning model:
+  
+  1. You request a swap for a specific recipe
+  2. The ML model finds nutritionally similar recipes
+  3. Smarty presents alternatives matching your preferences
+  4. You can accept or request another suggestion
+  
+  This feature is also available directly in the My Plan interface.
+</Accordion>
+
+### 5. Profile & Preference Updates
+
+<Accordion title="How It Works">
+  Update your dietary information conversationally:
+  
+  **Examples:**
+  - "Add gluten allergy to my restrictions"
+  - "I don't like mushrooms anymore"
+  - "Change my goal to weight maintenance"
+  - "Update my diet type to pescatarian"
+  
+  Smarty updates your profile and confirms the changes.
+</Accordion>
+
+### 6. Current Plan Retrieval
+
+<Accordion title="How It Works">
+  Ask Smarty to show your active meal plan:
+  
+  - Displays all meals for the week
+  - Shows nutritional breakdown by day
+  - Includes recipe names and macro totals
+  
+  **Example prompts:**
+  - "Show me my current plan"
+  - "What's on my meal plan?"
+  - "What am I eating this week?"
+</Accordion>
+
+### 7. Profile Summary
+
+<Accordion title="How It Works">
+  Get an overview of your profile settings:
+  
+  - Current goals and targets
+  - Active dietary restrictions
+  - Preferred diet types
+  - Biometric information
+  - Taste preferences
+  
+  **Example prompts:**
+  - "Show my profile"
+  - "What are my current nutrition targets?"
+  - "What are my dietary restrictions?"
+</Accordion>
+
+## Conversation Features
+
+<CardGroup cols={2}>
+  <Card title="Persistent History" icon="clock-rotate-left">
+    Chat history is saved locally for 24 hours, providing context for multi-turn conversations.
+  </Card>
+  
+  <Card title="Natural Language Understanding" icon="brain">
+    Smarty understands intent, not just keywords. You can phrase requests in many different ways.
+  </Card>
+  
+  <Card title="Contextual Responses" icon="message-dots">
+    Smarty remembers the conversation flow, allowing for follow-up questions and refinements.
+  </Card>
+  
+  <Card title="Tool Integration" icon="toolbox">
+    Behind the scenes, Smarty uses 7+ specialized tools to handle different types of requests.
+  </Card>
+</CardGroup>
+
+## Message Interface
+
+### Message Types
+
+<Tabs>
+  <Tab title="User Messages">
+    Your messages appear on the right side of the chat with a distinct style. Each message shows a timestamp.
+  </Tab>
+  
+  <Tab title="Smarty Messages">
+    Smarty's responses appear on the left with an AI avatar. Responses can include:
+    - Text answers
+    - Recipe suggestions
+    - Confirmation messages
+    - Structured data (meal plans, recipes)
+  </Tab>
+  
+  <Tab title="Typing Indicator">
+    When Smarty is processing your request, you'll see an animated typing indicator.
+  </Tab>
+  
+  <Tab title="Proposal Cards">
+    For recipe swaps, Smarty presents alternatives in interactive cards showing:
+    - Recipe image
+    - Original vs. suggested recipe
+    - Nutritional comparison
+    - Accept/Decline buttons
+  </Tab>
+</Tabs>
+
+### Proposal Cards (Recipe Swaps)
+
+When Smarty suggests a recipe swap, you'll see an interactive card:
+
+<Frame>
+  **Swap Recipe Suggestion**
+  
+  Original Recipe (calories) → Suggested Recipe (calories)
+  
+  [Confirm] [Request Another]
+</Frame>
+
+- **Confirm**: Accept the suggestion and update your plan
+- **Request Another**: Ask for a different alternative
+
+The card updates in real-time as you interact with it.
+
+## Example Conversations
+
+<AccordionGroup>
+  <Accordion title="Generating Your First Plan">
+    **You:** "Hi Smarty, I need to create my meal plan"
+    
+    **Smarty:** "I'd be happy to help you create a personalized weekly meal plan! Based on your profile, I'll generate a 7-day plan with [X] meals per day, tailored to your [goal] and [diet type] preferences. One moment..."
+    
+    **Smarty:** "Your weekly meal plan has been created! It includes [X] calories per day with balanced macronutrients to support your [goal] goal. You can view it in the My Plan section."
+  </Accordion>
+  
+  <Accordion title="Searching for Specific Recipes">
+    **You:** "Find me high-protein vegetarian lunches under 500 calories"
+    
+    **Smarty:** "I found 12 vegetarian lunch recipes that are high in protein and under 500 calories. Here are the top options:
+    
+    1. Lentil & Quinoa Bowl - 380 kcal, 24g protein
+    2. Greek Chickpea Salad - 420 kcal, 18g protein
+    3. Tofu Stir-Fry with Vegetables - 450 kcal, 22g protein
+    ..."
+  </Accordion>
+  
+  <Accordion title="Modifying a Meal">
+    **You:** "I don't like Tuesday's dinner. Can you change it to something with fish?"
+    
+    **Smarty:** "I'll replace Tuesday's dinner with a fish-based recipe that fits your nutritional targets..."
+    
+    **Smarty:** "Done! I've replaced your Tuesday dinner with Grilled Salmon with Asparagus (480 kcal, 42g protein). The macros are very similar to your original meal."
+  </Accordion>
+  
+  <Accordion title="Updating Preferences">
+    **You:** "Add dairy-free to my restrictions please"
+    
+    **Smarty:** "I've updated your profile to include dairy-free as a dietary restriction. Future meal plans will exclude dairy products. Would you like me to regenerate your current plan to reflect this change?"
+  </Accordion>
+  
+  <Accordion title="Viewing Your Plan">
+    **You:** "What am I eating this week?"
+    
+    **Smarty:** "Here's your current meal plan:
+    
+    **Monday** (2,100 kcal)
+    - Breakfast: Oatmeal with Berries - 350 kcal
+    - Lunch: Chicken Caesar Salad - 480 kcal
+    - Dinner: Baked Salmon with Vegetables - 520 kcal
+    ...
+    
+    Would you like details on any specific day or meal?"
+  </Accordion>
+</AccordionGroup>
+
+## AI Technology Stack
+
+Smarty is powered by:
+
+- **LangChain**: For natural language understanding and tool orchestration
+- **LangGraph**: Manages conversational state and tool routing
+- **Ollama**: Provides local LLM inference for privacy
+- **KNN ML Model**: Powers recipe similarity and swap suggestions
+- **FastAPI Backend**: Handles tool execution and database queries
+
+<Info>
+  All AI processing happens server-side, ensuring fast responses even on lower-end devices.
+</Info>
+
+## Chat Persistence
+
+<CardGroup cols={2}>
+  <Card title="24-Hour History" icon="clock">
+    Conversations are stored in your browser's local storage for 24 hours.
+  </Card>
+  
+  <Card title="Auto-Cleanup" icon="trash">
+    After 24 hours of inactivity, the chat history automatically clears.
+  </Card>
+  
+  <Card title="User-Specific" icon="user-lock">
+    Each user has their own isolated chat history based on their user ID.
+  </Card>
+  
+  <Card title="Manual Refresh" icon="rotate">
+    Refresh the page to start a fresh conversation if desired.
+  </Card>
+</CardGroup>
+
+## Use Cases
+
+<AccordionGroup>
+  <Accordion title="First-Time Plan Creation">
+    After completing your profile, chat with Smarty to generate your first personalized meal plan. The AI considers all your preferences automatically.
+  </Accordion>
+  
+  <Accordion title="Quick Recipe Discovery">
+    When you're craving something specific or need inspiration, ask Smarty to search for recipes matching your mood or available ingredients.
+  </Accordion>
+  
+  <Accordion title="On-the-Fly Modifications">
+    Life happens! If you can't eat a planned meal, quickly swap it through the chat without navigating multiple screens.
+  </Accordion>
+  
+  <Accordion title="Nutrition Education">
+    Ask Smarty questions about nutrition, macros, or healthy eating. The AI provides informative responses based on best practices.
+  </Accordion>
+  
+  <Accordion title="Progressive Refinement">
+    Start with a general request, then refine it through conversation:
+    - "Show me dinner ideas"
+    - "Make them vegetarian"
+    - "Under 600 calories"
+    - "With high protein"
+  </Accordion>
+  
+  <Accordion title="Weekly Plan Reviews">
+    Ask Smarty to show your plan and discuss potential improvements or variations for future weeks.
+  </Accordion>
+</AccordionGroup>
+
+## Tips for Best Results
+
+<Tip>
+  **Be Specific**: The more details you provide, the better Smarty can help. Instead of "change my meal," say "replace Thursday's lunch with a vegan option under 500 calories."
+</Tip>
+
+<Tip>
+  **Use Natural Language**: Don't worry about exact commands. Smarty understands conversational phrasing.
+</Tip>
+
+<Tip>
+  **Ask Follow-Up Questions**: If a response isn't quite what you wanted, refine your request in the next message.
+</Tip>
+
+<Tip>
+  **Leverage Context**: Smarty remembers recent conversation, so you can refer back to previous topics.
+</Tip>
+
+<Tip>
+  **Check Your Profile**: Ensure your profile is up-to-date for the most accurate recommendations.
+</Tip>
+
+## Limitations & Considerations
+
+<Warning>
+  **Profile Required**: Smarty needs a completed profile to generate plans and make personalized recommendations.
+</Warning>
+
+<Warning>
+  **Internet Connection**: The chat requires an active internet connection to communicate with the AI backend.
+</Warning>
+
+<Info>
+  **Processing Time**: Complex requests (like generating a full weekly plan) may take 10-30 seconds. You'll see a typing indicator while Smarty works.
+</Info>
+
+<Info>
+  **Recipe Database**: Recommendations are limited to recipes in the SmartEat AI database (90,000+ recipes).
+</Info>
+
+## Related Features
+
+- **[Dashboard](/features/dashboard)**: View and track the meals Smarty plans for you
+- **[My Plan](/features/meal-planning)**: See your complete weekly plan and make visual changes
+- **[Profile Setup](/features/profile-setup)**: Update the preferences Smarty uses for recommendations
+
+---
+
+<Card title="Smarty is Learning" icon="graduation-cap">
+  SmartEat AI continuously improves based on user interactions and feedback. Your conversations help make Smarty smarter!
+</Card>

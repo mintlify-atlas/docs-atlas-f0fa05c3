@@ -1,0 +1,401 @@
+---
+title: 'Environment Variables'
+description: 'Complete reference for configuring SmartEat AI environment variables'
+---
+
+## Overview
+
+SmartEat AI uses environment variables for configuration. Copy `.env.example` to `.env` in the project root and customize the values for your environment.
+
+```bash
+cp .env.example .env
+```
+
+<Note>
+  Never commit the `.env` file to version control. It contains sensitive credentials and should be kept secret.
+</Note>
+
+## Database Configuration
+
+PostgreSQL database connection settings.
+
+<ParamField path="POSTGRES_USER" type="string" required>
+  PostgreSQL username for database authentication.
+  
+  **Default**: `smarteatai`
+  
+  **Example**: `smarteatai`
+  
+  ```bash
+  POSTGRES_USER=smarteatai
+  ```
+</ParamField>
+
+<ParamField path="POSTGRES_PASSWORD" type="string" required>
+  PostgreSQL password for database authentication.
+  
+  **Default**: `smarteatai`
+  
+  **Example**: `my_secure_password_123`
+  
+  <Note>
+    Use a strong password in production environments.
+  </Note>
+  
+  ```bash
+  POSTGRES_PASSWORD=smarteatai
+  ```
+</ParamField>
+
+<ParamField path="POSTGRES_DB" type="string" required>
+  Name of the PostgreSQL database.
+  
+  **Default**: `smarteatai`
+  
+  **Example**: `smarteatai`
+  
+  ```bash
+  POSTGRES_DB=smarteatai
+  ```
+</ParamField>
+
+<ParamField path="DATABASE_URL" type="string" required>
+  Full PostgreSQL connection URL used by the backend.
+  
+  **Format**: `postgresql://[user]:[password]@[host]:[port]/[database]`
+  
+  **Default**: `postgresql://smarteatai:smarteatai@db:5432/smarteatai`
+  
+  <Note>
+    In Docker, use `db` as the host (service name). For local development, use `localhost`.
+  </Note>
+  
+  ```bash
+  # Docker
+  DATABASE_URL=postgresql://smarteatai:smarteatai@db:5432/smarteatai
+  
+  # Local
+  DATABASE_URL=postgresql://smarteatai:smarteatai@localhost:5432/smarteatai
+  ```
+</ParamField>
+
+## ChromaDB Configuration
+
+Vector database settings for recipe embeddings.
+
+<ParamField path="CHROMA_DB" type="string" required>
+  Path to ChromaDB persistence directory for storing recipe embeddings.
+  
+  **Default**: `backend/app/data/chroma_db_recipes`
+  
+  **Example**: `backend/app/data/chroma_db_recipes`
+  
+  <Note>
+    ChromaDB integration is currently not active in production. Queries use PostgreSQL directly instead.
+  </Note>
+  
+  ```bash
+  CHROMA_DB=backend/app/data/chroma_db_recipes
+  ```
+</ParamField>
+
+<ParamField path="CHROMA_EMBEDDING_MODEL" type="string" required>
+  Ollama model used for generating embeddings.
+  
+  **Default**: `llama3`
+  
+  **Example**: `llama3`, `llama3.1`, `mistral`
+  
+  ```bash
+  CHROMA_EMBEDDING_MODEL=llama3
+  ```
+</ParamField>
+
+## JWT Authentication
+
+JSON Web Token configuration for user authentication.
+
+<ParamField path="SECRET_KEY" type="string" required>
+  Secret key used to sign JWT tokens. Must be at least 32 characters.
+  
+  **Default**: `your-super-secret-key-change-this-in-production-min-32-chars`
+  
+  **Security**: Generate a strong random key for production:
+  
+  ```bash
+  # Generate a secure key
+  python -c "import secrets; print(secrets.token_urlsafe(32))"
+  ```
+  
+  <Note>
+    **CRITICAL**: Change this value in production! Using the default key is a severe security risk.
+  </Note>
+  
+  ```bash
+  SECRET_KEY=your-super-secret-key-change-this-in-production-min-32-chars
+  ```
+</ParamField>
+
+<ParamField path="ALGORITHM" type="string" required>
+  Algorithm used for JWT token signing.
+  
+  **Default**: `HS256`
+  
+  **Options**: `HS256`, `HS384`, `HS512`, `RS256`
+  
+  ```bash
+  ALGORITHM=HS256
+  ```
+</ParamField>
+
+<ParamField path="ACCESS_TOKEN_EXPIRE_MINUTES" type="integer" required>
+  Number of minutes before access tokens expire.
+  
+  **Default**: `30`
+  
+  **Example**: `30` (30 minutes), `1440` (24 hours)
+  
+  ```bash
+  ACCESS_TOKEN_EXPIRE_MINUTES=30
+  ```
+</ParamField>
+
+## Backend Configuration
+
+Backend service URLs.
+
+<ParamField path="BACKEND_URL" type="string" required>
+  Base URL where the backend API is accessible.
+  
+  **Default**: `http://localhost:8000`
+  
+  **Example**: `http://localhost:8000`, `https://api.smarteatai.com`
+  
+  ```bash
+  # Development
+  BACKEND_URL=http://localhost:8000
+  
+  # Production
+  BACKEND_URL=https://api.smarteatai.com
+  ```
+</ParamField>
+
+<ParamField path="FRONTEND_URL" type="string" required>
+  Base URL where the frontend application is accessible.
+  
+  **Default**: `http://localhost:3000`
+  
+  **Example**: `http://localhost:3000`, `https://smarteatai.com`
+  
+  Used for CORS configuration and redirects.
+  
+  ```bash
+  # Development
+  FRONTEND_URL=http://localhost:3000
+  
+  # Production
+  FRONTEND_URL=https://smarteatai.com
+  ```
+</ParamField>
+
+## Ollama Configuration
+
+Large Language Model (LLM) server settings.
+
+<ParamField path="OLLAMA_MODEL" type="string" required>
+  Name of the Ollama model to use for chat and recommendations.
+  
+  **Default**: `llama3.1`
+  
+  **Options**: `llama3`, `llama3.1`, `mistral`, `mixtral`, `phi3`
+  
+  **Note**: Model must be downloaded first:
+  ```bash
+  ollama pull llama3.1
+  ```
+  
+  ```bash
+  OLLAMA_MODEL=llama3.1
+  ```
+</ParamField>
+
+<ParamField path="OLLAMA_BASE_URL" type="string" required>
+  Base URL for the Ollama API server.
+  
+  **Default**: `http://ollama:11434`
+  
+  **Example**: `http://ollama:11434` (Docker), `http://localhost:11434` (Local)
+  
+  <Note>
+    In Docker, use the service name `ollama`. For local development, use `localhost`.
+  </Note>
+  
+  ```bash
+  # Docker
+  OLLAMA_BASE_URL=http://ollama:11434
+  
+  # Local
+  OLLAMA_BASE_URL=http://localhost:11434
+  ```
+</ParamField>
+
+## Complete Example
+
+Here's a complete `.env` file example for development:
+
+```bash
+# Database Configuration
+POSTGRES_USER=smarteatai
+POSTGRES_PASSWORD=smarteatai
+POSTGRES_DB=smarteatai
+DATABASE_URL=postgresql://smarteatai:smarteatai@db:5432/smarteatai
+
+# ChromaDB Configuration
+CHROMA_DB=backend/app/data/chroma_db_recipes
+CHROMA_EMBEDDING_MODEL=llama3
+
+# JWT Configuration
+SECRET_KEY=your-super-secret-key-change-this-in-production-min-32-chars
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Backend Configuration
+BACKEND_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:3000
+
+# Ollama Configuration
+OLLAMA_MODEL=llama3.1
+OLLAMA_BASE_URL=http://ollama:11434
+```
+
+## Environment-Specific Configuration
+
+### Development
+
+```bash
+# Use Docker service names
+DATABASE_URL=postgresql://smarteatai:smarteatai@db:5432/smarteatai
+OLLAMA_BASE_URL=http://ollama:11434
+
+# Shorter token expiry for testing
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Local URLs
+BACKEND_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:3000
+```
+
+### Local (No Docker)
+
+```bash
+# Use localhost
+DATABASE_URL=postgresql://smarteatai:smarteatai@localhost:5432/smarteatai
+OLLAMA_BASE_URL=http://localhost:11434
+
+# Same URLs
+BACKEND_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:3000
+```
+
+### Production
+
+```bash
+# Strong credentials
+POSTGRES_USER=smarteatai_prod
+POSTGRES_PASSWORD=<STRONG_RANDOM_PASSWORD>
+DATABASE_URL=postgresql://smarteatai_prod:<PASSWORD>@db:5432/smarteatai
+
+# Strong secret key (generate with: python -c "import secrets; print(secrets.token_urlsafe(32))")
+SECRET_KEY=<GENERATED_SECURE_KEY>
+
+# Longer token expiry
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+
+# Production URLs
+BACKEND_URL=https://api.smarteatai.com
+FRONTEND_URL=https://smarteatai.com
+```
+
+## Security Best Practices
+
+<Note>
+  Follow these security guidelines for production deployments:
+</Note>
+
+1. **Change Default Credentials**
+   - Never use default database passwords
+   - Generate strong random passwords
+
+2. **Secure Secret Keys**
+   - Generate a cryptographically secure `SECRET_KEY`
+   - Minimum 32 characters, use random bytes
+   ```bash
+   python -c "import secrets; print(secrets.token_urlsafe(32))"
+   ```
+
+3. **Environment Isolation**
+   - Use different `.env` files for dev/staging/production
+   - Never commit `.env` files to version control
+   - Add `.env` to `.gitignore`
+
+4. **Token Expiration**
+   - Use shorter expiration times for sensitive operations
+   - Balance security with user experience
+
+5. **HTTPS in Production**
+   - Always use HTTPS URLs in production
+   - Enable SSL/TLS for database connections
+
+## Troubleshooting
+
+### Database Connection Failed
+
+```bash
+# Check DATABASE_URL format
+DATABASE_URL=postgresql://[user]:[password]@[host]:[port]/[database]
+
+# Verify PostgreSQL is running
+docker compose ps db
+
+# Check database logs
+docker compose logs db
+```
+
+### JWT Token Errors
+
+```bash
+# Ensure SECRET_KEY is at least 32 characters
+SECRET_KEY=your-super-secret-key-change-this-in-production-min-32-chars
+
+# Verify ALGORITHM matches backend configuration
+ALGORITHM=HS256
+```
+
+### Ollama Connection Issues
+
+```bash
+# Check Ollama service is running
+docker compose ps ollama
+
+# Verify model is downloaded
+docker exec smarteatai_ollama ollama list
+
+# Pull model if missing
+docker exec smarteatai_ollama ollama pull llama3.1
+```
+
+### CORS Errors
+
+```bash
+# Ensure frontend/backend URLs match
+BACKEND_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:3000
+
+# Check browser console for CORS details
+```
+
+## Next Steps
+
+- Follow the [Installation](/development/installation) guide to set up locally
+- Use [Docker Setup](/development/docker-setup) for containerized development
+- Review the API documentation at http://localhost:8000/docs

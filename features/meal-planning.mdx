@@ -1,0 +1,429 @@
+---
+title: 'Meal Planning (My Plan)'
+description: 'View, manage, and optimize your complete weekly nutrition plan with visual controls'
+icon: 'calendar-days'
+---
+
+## Overview
+
+My Plan is your comprehensive weekly meal management center. It displays your complete 7-day nutrition plan with detailed statistics, allows you to visualize daily meal distributions, and provides powerful tools to swap individual recipes using AI-powered recommendations.
+
+<img
+  className="block"
+  src="https://github.com/user-attachments/assets/ea46a9b3-8f86-4b9b-96f0-b9eae3cbb827"
+  alt="SmartEat AI My Plan Interface"
+/>
+
+## What It Does
+
+My Plan serves as your weekly nutrition command center:
+
+- **Weekly Overview**: Displays all meals for every day of the week
+- **Nutritional Statistics**: Shows average daily intake of calories, protein, carbs, and fats
+- **Visual Meal Cards**: Presents each recipe with images, nutritional info, and action buttons
+- **AI-Powered Swaps**: Suggests alternative recipes using machine learning
+- **Day Navigation**: Quickly jump to any day of the week
+- **Progress Tracking**: Compares your plan's averages against your nutritional goals
+
+## Key Capabilities
+
+<CardGroup cols={2}>
+  <Card title="Weekly Statistics" icon="chart-bar">
+    View average daily nutritional metrics across your entire week to ensure consistency.
+  </Card>
+  
+  <Card title="Meal Visualization" icon="images">
+    Each meal is displayed as a card with recipe image, name, and complete macro breakdown.
+  </Card>
+  
+  <Card title="Smart Recipe Swaps" icon="repeat">
+    Request AI-suggested alternatives for any meal using the trained KNN recommendation model.
+  </Card>
+  
+  <Card title="Day-by-Day Navigation" icon="calendar-check">
+    Click on any day to scroll directly to that day's meal section.
+  </Card>
+  
+  <Card title="Goal Comparison" icon="bullseye">
+    Stats cards show current vs. target values for quick goal alignment checks.
+  </Card>
+  
+  <Card title="Recipe Details" icon="circle-info">
+    View complete nutritional information for each recipe including calories and all macros.
+  </Card>
+</CardGroup>
+
+## How to Use My Plan
+
+<Steps>
+  <Step title="Access Your Plan">
+    Click **📆 My Nutrition Plan** in the sidebar to view your active weekly meal plan.
+    
+    <Note>
+      You must have an active plan generated through the AI Chat before accessing My Plan.
+    </Note>
+  </Step>
+  
+  <Step title="Review Weekly Statistics">
+    At the top of the page, check your average daily nutritional intake:
+    - Calories (kcal)
+    - Proteins (g)
+    - Carbohydrates (g)
+    - Fats (g)
+    
+    Each stat card shows your current average vs. your goal.
+  </Step>
+  
+  <Step title="Navigate Through Days">
+    Use the day selector buttons to jump to specific days:
+    - Click any day name (Monday, Tuesday, etc.)
+    - The page scrolls to that day's meal section
+  </Step>
+  
+  <Step title="Review Daily Meals">
+    Each day shows all scheduled meals in order:
+    - Breakfast
+    - Mid-morning snack (if applicable)
+    - Lunch
+    - Afternoon snack (if applicable)
+    - Dinner
+    - Evening snack (if applicable)
+    
+    The number of meals matches your profile preference.
+  </Step>
+  
+  <Step title="Swap Individual Recipes">
+    To replace a specific meal:
+    1. Click the **"Swap Recipe"** button on the meal card
+    2. The AI recommends a nutritionally similar alternative
+    3. Review the suggested recipe
+    4. Accept it to update your plan, or request another suggestion
+  </Step>
+</Steps>
+
+## Interface Components
+
+### Weekly Statistics Cards
+
+The top section displays four prominent statistics cards:
+
+<Tabs>
+  <Tab title="Calories Card">
+    - **Icon**: Flame 🔥
+    - **Current**: Average daily calories across the week
+    - **Goal**: Your target daily calorie intake
+    - **Unit**: kcal
+    
+    Helps ensure you're hitting your energy targets consistently.
+  </Tab>
+  
+  <Tab title="Proteins Card">
+    - **Icon**: Dumbbell 💪
+    - **Current**: Average daily protein intake
+    - **Goal**: Your protein target
+    - **Unit**: grams
+    
+    Critical for muscle maintenance and growth.
+  </Tab>
+  
+  <Tab title="Carbohydrates Card">
+    - **Icon**: Zap ⚡
+    - **Current**: Average daily carb intake
+    - **Goal**: Your carb target
+    - **Unit**: grams
+    
+    Your primary energy source for activity.
+  </Tab>
+  
+  <Tab title="Fats Card">
+    - **Icon**: Droplet 💧
+    - **Current**: Average daily fat intake
+    - **Goal**: Your fat target
+    - **Unit**: grams
+    
+    Essential for hormones and nutrient absorption.
+  </Tab>
+</Tabs>
+
+<Info>
+  **Averages Explained**: Statistics show the average across all 7 days, helping you identify if your weekly plan is balanced or if certain days skew high/low.
+</Info>
+
+### Day Selector
+
+The day selector provides quick navigation:
+
+- **Layout**: Horizontal row of day names (Mon, Tue, Wed, etc.)
+- **Interaction**: Click any day to scroll to its section
+- **Visual Feedback**: Active day is highlighted
+- **Responsive**: Adapts to mobile screens
+
+### Day Sections
+
+Each day has its own section displaying:
+
+<Card title="Day Header" icon="heading">
+  - Day name (e.g., "Monday")
+  - Day number (1-7)
+</Card>
+
+Below the header, all meals for that day are listed vertically.
+
+### Meal Cards
+
+Each meal is presented as an interactive card:
+
+<Accordion title="Card Layout">
+  **Left Side:**
+  - Recipe image (or placeholder if unavailable)
+  - "Swap Recipe" button
+  
+  **Right Side:**
+  - Recipe name
+  - Meal type badge (Breakfast, Lunch, Dinner, Snack)
+  - Nutritional breakdown:
+    - Calories (kcal)
+    - Protein (g)
+    - Carbs (g)
+    - Fat (g)
+</Accordion>
+
+<Accordion title="Swap Recipe Button">
+  Clicking this button triggers the AI recommendation system:
+  
+  1. Sends request to ML model with current recipe ID and meal type
+  2. KNN algorithm finds nutritionally similar recipes
+  3. Returns alternative matching your preferences
+  4. Displays suggestion in a modal or inline card
+  5. You can accept or request another option
+</Accordion>
+
+## Recipe Swap Workflow
+
+The swap feature uses a trained K-Nearest Neighbors (KNN) machine learning model:
+
+<Steps>
+  <Step title="User Initiates Swap">
+    Click "Swap Recipe" on any meal card.
+  </Step>
+  
+  <Step title="AI Processes Request">
+    The system:
+    - Identifies the current recipe and meal type
+    - Queries the KNN model for similar recipes
+    - Filters by your dietary restrictions and preferences
+    - Selects the best alternative
+  </Step>
+  
+  <Step title="Suggestion Presented">
+    You see a comparison:
+    - Original recipe (name, calories, macros)
+    - Suggested alternative (name, calories, macros)
+    - Visual difference highlight
+  </Step>
+  
+  <Step title="User Decision">
+    Choose one of three actions:
+    - **Accept**: Replace the meal in your plan
+    - **Request Another**: Get a different suggestion
+    - **Cancel**: Keep the original recipe
+  </Step>
+  
+  <Step title="Plan Updated">
+    If accepted:
+    - The meal updates in your weekly plan
+    - Statistics recalculate automatically
+    - Changes save to the database
+  </Step>
+</Steps>
+
+<Info>
+  **ML Model Details**: The KNN model was trained on 91,000+ clean recipes, considering nutritional similarity, diet types, and ingredient compatibility.
+</Info>
+
+## Daily Meal Distribution
+
+Your plan displays meals according to your profile's "meals per day" setting:
+
+| Meals Per Day | Typical Schedule |
+|---|---|
+| **3 meals** | Breakfast, Lunch, Dinner |
+| **4 meals** | Breakfast, Lunch, Snack, Dinner |
+| **5 meals** | Breakfast, Snack, Lunch, Snack, Dinner |
+| **6 meals** | Breakfast, Snack, Lunch, Snack, Dinner, Snack |
+
+Each meal is labeled by type and scheduled appropriately throughout the day.
+
+## Use Cases
+
+<AccordionGroup>
+  <Accordion title="Weekly Meal Prep Planning">
+    Use My Plan to create your weekly grocery list:
+    1. Open My Plan
+    2. Review all recipes for the week
+    3. Note ingredients needed for each recipe
+    4. Shop for the entire week in one trip
+    
+    Many users take screenshots of their plan for easy reference while shopping.
+  </Accordion>
+  
+  <Accordion title="Meal Variety Check">
+    Scan through the week to ensure you're not eating the same thing too often:
+    - Look for repeated recipes
+    - Check for ingredient variety
+    - Swap meals if you see too much repetition
+  </Accordion>
+  
+  <Accordion title="Adapting to Schedule Changes">
+    If your week's schedule changes:
+    - Swap a complex dinner recipe for a quick one on busy days
+    - Replace a meal you won't be home for
+    - Adjust portion sizes by swapping to higher/lower calorie options
+  </Accordion>
+  
+  <Accordion title="Nutritional Optimization">
+    Use the statistics to fine-tune your plan:
+    - If protein is consistently low, swap meals for high-protein alternatives
+    - If calories are too high, request lower-calorie swaps
+    - Balance macros across the week by strategic swapping
+  </Accordion>
+  
+  <Accordion title="Accommodating Food Preferences">
+    As you discover recipes you love or dislike:
+    - Keep favorites in your plan
+    - Swap out meals you're not excited about
+    - Gradually optimize your weekly routine to your taste
+  </Accordion>
+  
+  <Accordion title="Sharing with Family/Roommates">
+    Share your My Plan view with others who cook for you or eat with you, so they understand your nutritional approach and can help with meal prep.
+  </Accordion>
+</AccordionGroup>
+
+## Statistics Insights
+
+<CardGroup cols={2}>
+  <Card title="Goal Alignment" icon="crosshairs">
+    If your average intake matches your goals (within 5-10%), your plan is well-calibrated.
+  </Card>
+  
+  <Card title="Macro Distribution" icon="chart-pie">
+    Compare the ratio of protein:carbs:fats to ensure it aligns with your diet type (e.g., high-protein for muscle gain, higher fat for keto).
+  </Card>
+  
+  <Card title="Consistency Check" icon="equals">
+    Ideally, each day should be within 10-15% of your daily goal. Large variations may indicate imbalanced days.
+  </Card>
+  
+  <Card title="Progressive Adjustment" icon="arrow-trend-up">
+    Over time, use statistics to incrementally improve your plan by swapping outlier meals.
+  </Card>
+</CardGroup>
+
+## Plan States
+
+<Tabs>
+  <Tab title="Active Plan">
+    When you have a current meal plan:
+    - Full week is displayed
+    - All statistics are calculated
+    - Swap functionality is available
+    - You can track daily progress
+  </Tab>
+  
+  <Tab title="No Plan">
+    If you haven't generated a plan yet:
+    - A prompt card appears
+    - Instructions to use AI Chat to create a plan
+    - Direct link to the chat feature
+  </Tab>
+  
+  <Tab title="Loading">
+    While fetching your plan:
+    - Loading indicator displays
+    - Prevents interaction until data is ready
+  </Tab>
+</Tabs>
+
+<Warning>
+  **Generate First**: You must generate a plan through the AI Chat feature before My Plan will display content.
+</Warning>
+
+## Interactive Features
+
+<CardGroup cols={2}>
+  <Card title="Real-Time Updates" icon="bolt">
+    When you accept a recipe swap, the plan updates immediately without page refresh.
+  </Card>
+  
+  <Card title="Visual Feedback" icon="eye">
+    Cards highlight on hover, buttons show loading states during swaps, and success indicators confirm changes.
+  </Card>
+  
+  <Card title="Smooth Scrolling" icon="arrow-down">
+    Clicking day names smoothly scrolls to that section for a polished UX.
+  </Card>
+  
+  <Card title="Responsive Design" icon="mobile">
+    My Plan adapts to all screen sizes - desktop, tablet, and mobile.
+  </Card>
+</CardGroup>
+
+## Technical Details
+
+### KNN Recommendation Model
+
+The recipe swap feature is powered by a K-Nearest Neighbors (KNN) machine learning model:
+
+- **Training Data**: 91,056 cleaned recipes from Food.com dataset
+- **Features**: Nutritional content (calories, protein, carbs, fats, fiber, sugar, etc.)
+- **Algorithm**: Euclidean distance in scaled feature space
+- **Filtering**: Results filtered by meal type and dietary restrictions
+- **Objective**: Find recipes with similar nutritional profiles
+
+<Info>
+  The model ensures swaps maintain nutritional consistency, helping you stay on track with your goals.
+</Info>
+
+### Data Flow
+
+1. **Fetch Plan**: GET request to `/api/plan/current`
+2. **Transform Data**: Convert API response to UI-friendly format
+3. **Calculate Stats**: Compute weekly averages for display
+4. **Swap Request**: POST to `/api/ml/swap-recipe` with recipe ID and meal type
+5. **Update Plan**: PUT to `/api/meal-detail/{id}` with new recipe ID
+6. **Refresh UI**: Update state and recalculate statistics
+
+## Tips for Effective Meal Planning
+
+<Tip>
+  **Review on Sundays**: Spend 10 minutes each Sunday reviewing your upcoming week's plan and making any necessary swaps.
+</Tip>
+
+<Tip>
+  **Prep Together**: If multiple meals share ingredients, prep them together to save time.
+</Tip>
+
+<Tip>
+  **Keep a Favorites List**: Note which recipes you love so you can request them in future plans.
+</Tip>
+
+<Tip>
+  **Balance Complexity**: Mix simple and complex recipes throughout the week based on your schedule.
+</Tip>
+
+<Tip>
+  **Check Ingredients**: Before committing to a plan, verify you can access all ingredients or swap recipes with hard-to-find items.
+</Tip>
+
+## Related Features
+
+- **[Dashboard](/features/dashboard)**: Track daily execution of your weekly plan
+- **[AI Chat](/features/ai-chat)**: Generate new plans or request plan-wide modifications
+- **[Profile Setup](/features/profile-setup)**: Adjust preferences that influence plan generation
+
+---
+
+<Card title="Plan Flexibility" icon="shuffle">
+  Your meal plan is a guide, not a rigid schedule. Life happens! Use the swap feature freely to adapt your plan to real-world circumstances while maintaining nutritional consistency.
+</Card>

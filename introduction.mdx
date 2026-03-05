@@ -1,0 +1,138 @@
+---
+title: Introduction
+description: Your AI-powered personal assistant for personalized nutritional meal plans
+---
+
+## What is SmartEat AI?
+
+SmartEat AI is an innovative platform that combines artificial intelligence and nutritional management to deliver personalized meal planning experiences. The system analyzes dietary preferences, restrictions, and nutritional goals to generate customized recommendations tailored to each user's profile.
+
+<Note>
+SmartEat AI was developed as a Master's Thesis Project (TFM) for the Specialization Course in Artificial Intelligence and Big Data.
+</Note>
+
+## The Problem We Solve
+
+Planning a balanced diet represents a significant challenge for many people due to:
+
+- **Lack of nutritional knowledge** - Understanding macronutrients and proper portion sizes
+- **Limited time** - Meal planning takes significant effort and research
+- **Difficulty maintaining consistency** - Keeping track of dietary habits over time
+- **Rigid solutions** - Most apps offer calorie tracking without intelligent adaptation
+
+While calorie tracking applications exist, few combine intelligent analysis, automatic meal plan generation, and conversational capabilities to dynamically adapt to the user's diet.
+
+## Key Capabilities
+
+SmartEat AI addresses these challenges by providing:
+
+<CardGroup cols={2}>
+  <Card title="Smart Analysis" icon="brain">
+    Analyzes dietary preferences and food restrictions using AI
+  </Card>
+  <Card title="Nutritional Goals" icon="bullseye">
+    Considers objectives like deficit, maintenance, or surplus
+  </Card>
+  <Card title="Weekly Meal Plans" icon="calendar-week">
+    Generates personalized weekly meal plans automatically
+  </Card>
+  <Card title="Dynamic Modifications" icon="wand-magic-sparkles">
+    Allows meal swaps while maintaining nutritional coherence
+  </Card>
+  <Card title="Conversational Assistant" icon="comments">
+    Intelligent agent for recipe queries and meal adjustments
+  </Card>
+  <Card title="Real-time Recommendations" icon="robot">
+    Machine Learning model for instant recipe suggestions
+  </Card>
+</CardGroup>
+
+## Core Features
+
+### AI-Powered Recommendations
+
+Get personalized meal and nutritional plan suggestions powered by machine learning models trained on over 91,000 recipes.
+
+### Nutritional Analysis
+
+Track detailed macronutrients (proteins, carbohydrates, fats) and calories with real-time updates as you consume meals throughout the day.
+
+### Recipe Database
+
+Access a comprehensive database of healthy recipes filtered by your dietary preferences, allergies, and nutritional goals.
+
+### Personalized Profiles
+
+Configure your biometric data (weight, height, age, gender), activity level, and dietary preferences to receive accurate caloric requirements and recommendations.
+
+### Intuitive Interface
+
+Modern, responsive user experience built with Next.js and Tailwind CSS, accessible on desktop and mobile devices.
+
+### Conversational AI Agent
+
+Interact with "Smarty," your virtual nutritional assistant powered by LangChain and LangGraph, to:
+- Generate meal plans
+- Modify specific meals
+- Search for recipes matching your criteria
+- Update dietary preferences and restrictions
+
+## Who Is SmartEat AI For?
+
+<AccordionGroup>
+  <Accordion title="Health-Conscious Individuals">
+    Anyone looking to adopt healthier eating habits and maintain nutritional goals through intelligent meal planning.
+  </Accordion>
+  
+  <Accordion title="Fitness Enthusiasts">
+    Athletes and gym-goers who need precise macronutrient tracking to support training goals (muscle gain, fat loss, or maintenance).
+  </Accordion>
+  
+  <Accordion title="People with Dietary Restrictions">
+    Users with allergies, intolerances, or specific dietary preferences (vegan, vegetarian, gluten-free, etc.) who need tailored meal suggestions.
+  </Accordion>
+  
+  <Accordion title="Busy Professionals">
+    Those with limited time who want automated meal planning without the hassle of manual research and calculation.
+  </Accordion>
+  
+  <Accordion title="Nutrition Professionals">
+    Dietitians and nutritionists who can leverage the platform as a reference tool for personalized nutritional planning.
+  </Accordion>
+</AccordionGroup>
+
+## Technology Stack
+
+SmartEat AI leverages modern technologies to deliver a robust, scalable solution:
+
+### Frontend
+- **TypeScript & Next.js** - Type-safe React framework with App Router
+- **Tailwind CSS** - Modern, responsive styling
+- **React Context API** - Global state management
+
+### Backend
+- **Python & FastAPI** - High-performance async API framework
+- **PostgreSQL** - Relational database for recipes, users, and meal plans
+- **SQLAlchemy & Alembic** - ORM and database migrations
+
+### AI & Machine Learning
+- **scikit-learn** - KNN model for recipe recommendations
+- **LangChain & LangGraph** - Conversational AI agent framework
+- **Ollama** - Local LLM for natural language generation
+- **ChromaDB** - Vector database for semantic recipe search
+
+### DevOps
+- **Docker & Docker Compose** - Containerized deployment
+- **Adminer** - Database management interface
+
+## Vision and Purpose
+
+The purpose of SmartEat AI is to facilitate the adoption of healthy eating habits through advanced technology. Our vision is to become a reference tool for nutritional personalization, helping users achieve their wellness goals easily and effectively.
+
+## Next Steps
+
+Ready to get started? Continue to the [Quickstart Guide](/quickstart) to set up SmartEat AI on your local machine.
+
+<Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+  Get SmartEat AI running in minutes with Docker Compose
+</Card>

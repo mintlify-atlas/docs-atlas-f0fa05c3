@@ -1,0 +1,309 @@
+---
+title: "Update Profile"
+api: "PUT /api/profile"
+description: "Create or update the authenticated user's profile with fitness goals, body metrics, dietary preferences, and nutritional targets"
+---
+
+## Authentication
+
+This endpoint requires authentication. Include a valid JWT token in the Authorization header:
+
+```
+Authorization: Bearer <token>
+```
+
+## Request Body
+
+<ParamField body="goal" type="string" required>
+  User's fitness goal
+  
+  **Allowed values:** `lose_weight`, `maintain_weight`, `gain_weight`
+</ParamField>
+
+<ParamField body="height" type="float" required>
+  User's height in centimeters
+  
+  **Constraints:** Must be between 140 and 220 cm
+</ParamField>
+
+<ParamField body="weight" type="float" required>
+  User's weight in kilograms
+  
+  **Constraints:** Must be between 35 and 300 kg
+</ParamField>
+
+<ParamField body="body_type" type="string" required>
+  User's body type
+  
+  **Allowed values:** `lean`, `normal`, `stocky`, `obese`
+</ParamField>
+
+<ParamField body="gender" type="string" required>
+  User's gender
+  
+  **Allowed values:** `male`, `female`
+</ParamField>
+
+<ParamField body="meals_per_day" type="integer" required>
+  Number of meals per day
+  
+  **Constraints:** Must be between 1 and 6
+</ParamField>
+
+<ParamField body="activity_level" type="string" required>
+  User's physical activity level
+  
+  **Allowed values:** `low`, `medium`, `high`
+</ParamField>
+
+<ParamField body="birth_date" type="string" required>
+  User's birth date in ISO format (YYYY-MM-DD)
+  
+  **Constraints:** User must be between 16 and 100 years old
+</ParamField>
+
+<ParamField body="body_fat_percentage" type="float" default={0.0}>
+  User's body fat percentage
+  
+  **Constraints:** Must be >= 0.0
+</ParamField>
+
+<ParamField body="calories_target" type="float" default={0.0}>
+  User's daily calorie target
+  
+  **Constraints:** Must be >= 0.0
+</ParamField>
+
+<ParamField body="protein_target" type="float" default={0.0}>
+  User's daily protein target in grams
+  
+  **Constraints:** Must be >= 0.0
+</ParamField>
+
+<ParamField body="carbs_target" type="float" default={0.0}>
+  User's daily carbohydrate target in grams
+  
+  **Constraints:** Must be >= 0.0
+</ParamField>
+
+<ParamField body="fat_target" type="float" default={0.0}>
+  User's daily fat target in grams
+  
+  **Constraints:** Must be >= 0.0
+</ParamField>
+
+<ParamField body="tastes" type="array" default={[]}>
+  List of user's taste preferences
+  
+  <ParamField body="id" type="integer">
+    ID of existing taste category (optional for updates)
+  </ParamField>
+  
+  <ParamField body="name" type="string" required>
+    Name of the taste category (will be converted to lowercase)
+  </ParamField>
+</ParamField>
+
+<ParamField body="restrictions" type="array" default={[]}>
+  List of user's dietary restrictions
+  
+  <ParamField body="id" type="integer">
+    ID of existing restriction category (optional for updates)
+  </ParamField>
+  
+  <ParamField body="name" type="string" required>
+    Name of the restriction (will be converted to lowercase)
+  </ParamField>
+</ParamField>
+
+<ParamField body="diet_types" type="array" default={[]}>
+  List of user's diet type preferences
+  
+  **Allowed values:** `high_protein`, `low_carb`, `vegan`, `vegetarian`, `low_calorie`, `high_fiber`, `high_carb`
+</ParamField>
+
+## Response
+
+Returns the complete profile object with the same structure as the [Get Profile](/api/profile/get-profile) endpoint.
+
+<ResponseField name="id" type="integer" required>
+  Profile ID
+</ResponseField>
+
+<ResponseField name="user_id" type="integer" required>
+  Associated User ID
+</ResponseField>
+
+<ResponseField name="goal" type="string" required>
+  User's fitness goal
+</ResponseField>
+
+<ResponseField name="height" type="float" required>
+  User's height in centimeters
+</ResponseField>
+
+<ResponseField name="weight" type="float" required>
+  User's weight in kilograms
+</ResponseField>
+
+<ResponseField name="body_type" type="string" required>
+  User's body type
+</ResponseField>
+
+<ResponseField name="gender" type="string" required>
+  User's gender
+</ResponseField>
+
+<ResponseField name="meals_per_day" type="integer" required>
+  Number of meals per day
+</ResponseField>
+
+<ResponseField name="activity_level" type="string" required>
+  User's activity level
+</ResponseField>
+
+<ResponseField name="birth_date" type="string" required>
+  User's birth date
+</ResponseField>
+
+<ResponseField name="body_fat_percentage" type="float">
+  User's body fat percentage
+</ResponseField>
+
+<ResponseField name="calories_target" type="float">
+  User's target calories
+</ResponseField>
+
+<ResponseField name="protein_target" type="float">
+  User's target protein in grams
+</ResponseField>
+
+<ResponseField name="carbs_target" type="float">
+  User's target carbs in grams
+</ResponseField>
+
+<ResponseField name="fat_target" type="float">
+  User's target fat in grams
+</ResponseField>
+
+<ResponseField name="tastes" type="array">
+  List of taste preferences
+</ResponseField>
+
+<ResponseField name="restrictions" type="array">
+  List of dietary restrictions
+</ResponseField>
+
+<ResponseField name="diet_types" type="array">
+  List of diet types
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X PUT "https://api.smarteat.com/api/profile" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "goal": "lose_weight",
+    "height": 175.0,
+    "weight": 80.5,
+    "body_type": "normal",
+    "gender": "male",
+    "meals_per_day": 4,
+    "activity_level": "medium",
+    "birth_date": "1990-05-15",
+    "body_fat_percentage": 18.5,
+    "calories_target": 2200.0,
+    "protein_target": 165.0,
+    "carbs_target": 220.0,
+    "fat_target": 73.0,
+    "tastes": [
+      {"name": "spicy"},
+      {"name": "savory"}
+    ],
+    "restrictions": [
+      {"name": "lactose intolerance"}
+    ],
+    "diet_types": ["high_protein"]
+  }'
+```
+
+## Example Response
+
+```json
+{
+  "id": 1,
+  "user_id": 42,
+  "goal": "lose_weight",
+  "height": 175.0,
+  "weight": 80.5,
+  "body_type": "normal",
+  "gender": "male",
+  "meals_per_day": 4,
+  "activity_level": "medium",
+  "birth_date": "1990-05-15",
+  "body_fat_percentage": 18.5,
+  "calories_target": 2200.0,
+  "protein_target": 165.0,
+  "carbs_target": 220.0,
+  "fat_target": 73.0,
+  "tastes": [
+    {
+      "id": 1,
+      "name": "spicy"
+    },
+    {
+      "id": 3,
+      "name": "savory"
+    }
+  ],
+  "restrictions": [
+    {
+      "id": 2,
+      "name": "lactose intolerance"
+    }
+  ],
+  "diet_types": [
+    {
+      "id": 5,
+      "name": "high_protein"
+    }
+  ]
+}
+```
+
+## Error Responses
+
+<ResponseField name="422 Unprocessable Entity" type="error">
+  Validation error - invalid field values
+  
+  ```json
+  {
+    "detail": [
+      {
+        "loc": ["body", "height"],
+        "msg": "ensure this value is greater than or equal to 140",
+        "type": "value_error.number.not_ge"
+      }
+    ]
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="401 Unauthorized" type="error">
+  Authentication token is missing or invalid
+  
+  ```json
+  {
+    "detail": "Not authenticated"
+  }
+  ```
+</ResponseField>
+
+## Notes
+
+- This endpoint performs an **upsert** operation - it will create a new profile if one doesn't exist, or update the existing profile
+- All names in `tastes` and `restrictions` arrays are automatically converted to lowercase
+- The `birth_date` is validated to ensure the user is between 16 and 100 years old
+- Diet types must be one of the predefined enum values

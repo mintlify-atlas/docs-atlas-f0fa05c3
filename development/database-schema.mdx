@@ -1,0 +1,304 @@
+---
+title: Database Schema
+description: Overview of SmartEat AI database structure, models, and relationships
+---
+
+## Overview
+
+SmartEat AI uses PostgreSQL as its relational database, managed through SQLAlchemy ORM. The schema is designed to support user authentication, nutritional profiles, recipe management, and personalized meal planning.
+
+## Core Tables
+
+### Users
+
+The `users` table stores authentication and basic user information.
+
+```python
+users
+├── id (Integer, PK)
+├── name (String)
+├── email (String, unique)
+├── hashed_password (String)
+├── created_at (Timestamp)
+├── updated_at (Timestamp)
+└── profile_picture_url (String)
+```
+
+**Relationships:**
+- One-to-one with `profiles`
+- One-to-many with `plans`
+
+### Profiles
+
+The `profiles` table contains detailed nutritional and health information for each user.
+
+```python
+profiles
+├── id (Integer, PK)
+├── user_id (Integer, FK -> users.id)
+├── goal (Enum: lose_weight, maintain_weight, gain_weight)
+├── height (Float)
+├── weight (Float)
+├── body_type (Enum: lean, normal, stocky, obese)
+├── body_fat_percentage (Float)
+├── calories_target (Float)
+├── protein_target (Float)
+├── carbs_target (Float)
+├── fat_target (Float)
+├── gender (Enum: male, female)
+├── meals_per_day (SmallInteger, default: 3)
+├── activity_level (Enum: low, medium, high)
+└── birth_date (Date)
+```
+
+**Relationships:**
+- Many-to-many with `tastes` (via `profiles_tastes`)
+- Many-to-many with `restrictions` (via `profiles_restrictions`)
+- Many-to-many with `diet_types` (via `profiles_diet_types`)
+
+### Recipes
+
+The `recipes` table stores all available recipes with nutritional information.
+
+```python
+recipes
+├── id (Integer, PK)
+├── name (String)
+├── calories (Integer, default: 0)
+├── protein (Integer, default: 0)
+├── carbs (Integer, default: 0)
+├── fat (Integer, default: 0)
+├── image_url (String)
+├── recipe_url (String)
+├── recipe_id (Integer, unique)
+└── ingredients (String)
+```
+
+**Relationships:**
+- Many-to-many with `meal_types` (via `recipe_meal_types`)
+- Many-to-many with `diet_types` (via `recipe_diet_types`)
+
+### Plans
+
+The `plans` table represents weekly meal plans for users.
+
+```python
+plans
+├── id (Integer, PK)
+├── user_id (Integer, FK -> users.id)
+├── created_at (Timestamp)
+├── updated_at (Timestamp)
+└── active (Boolean, default: true)
+```
+
+**Relationships:**
+- Belongs to `user`
+- One-to-many with `daily_menus`
+
+### Daily Menus
+
+The `daily_menus` table contains daily meal schedules within a plan.
+
+```python
+daily_menus
+├── id (Integer, PK)
+├── plan_id (Integer, FK -> plans.id)
+└── day_of_week (SmallInteger)
+```
+
+**Relationships:**
+- Belongs to `plan`
+- One-to-many with `meal_details`
+
+### Meal Details
+
+The `meal_details` table stores individual meals within a daily menu.
+
+```python
+meal_details
+├── id (Integer, PK)
+├── recipe_id (Integer, FK -> recipes.id)
+├── daily_menu_id (Integer, FK -> daily_menus.id)
+├── schedule (SmallInteger)
+├── status (SmallInteger, default: 0)
+└── meal_type (Enum: breakfast, lunch, dinner, snack)
+```
+
+**Relationships:**
+- Belongs to `recipe`
+- Belongs to `daily_menu`
+
+## Category Tables
+
+### Diet Types
+
+The `diet_types` table defines available dietary preferences.
+
+```python
+diet_types
+├── id (Integer, PK)
+└── name (Enum: high_protein, low_carb, vegan, vegetarian, 
+            low_calorie, high_fiber, high_carb)
+```
+
+### Meal Types
+
+The `meal_types` table categorizes when recipes can be consumed.
+
+```python
+meal_types
+├── id (Integer, PK)
+└── name (Enum: breakfast, lunch, dinner, snack)
+```
+
+### Tastes
+
+The `tastes` table stores user flavor preferences.
+
+```python
+tastes
+├── id (Integer, PK)
+└── name (String, unique)
+```
+
+### Restrictions
+
+The `restrictions` table defines dietary restrictions and allergies.
+
+```python
+restrictions
+├── id (Integer, PK)
+└── name (String, unique)
+```
+
+## Junction Tables
+
+Junction tables implement many-to-many relationships:
+
+### Profile Relationships
+
+**profiles_tastes**
+```python
+profiles_tastes
+├── profile_id (Integer, PK, FK -> profiles.id)
+└── taste_id (Integer, PK, FK -> tastes.id)
+```
+
+**profiles_restrictions**
+```python
+profiles_restrictions
+├── profile_id (Integer, PK, FK -> profiles.id)
+└── restriction_id (Integer, PK, FK -> restrictions.id)
+```
+
+**profiles_diet_types**
+```python
+profiles_diet_types
+├── profile_id (Integer, PK, FK -> profiles.id)
+└── diet_type_id (Integer, PK, FK -> diet_types.id)
+```
+
+### Recipe Relationships
+
+**recipe_meal_types**
+```python
+recipe_meal_types
+├── recipe_id (Integer, PK, FK -> recipes.id)
+└── meal_type_id (Integer, PK, FK -> meal_types.id)
+```
+
+**recipe_diet_types**
+```python
+recipe_diet_types
+├── recipe_id (Integer, PK, FK -> recipes.id)
+└── diet_type_id (Integer, PK, FK -> diet_types.id)
+```
+
+## Entity Relationship Diagram
+
+The database follows this relationship structure:
+
+```
+User (1) ──────── (1) Profile
+  │
+  │ (1)
+  │
+  ▼ (N)
+Plan ──────── (N) DailyMenu ──────── (N) MealDetail ──────── (1) Recipe
+                                                                   │
+                                                                   │
+                                                        ┌──────────┴──────────┐
+                                                        │                     │
+                                                   MealTypes            DietTypes
+                                                        │                     │
+                                                        └──────────┬──────────┘
+                                                                   │
+Profile ────────────────────────────────────────────────────────┘
+  │
+  ├──────── (N) Tastes
+  ├──────── (N) Restrictions
+  └──────── (N) DietTypes
+```
+
+## Cascade Behavior
+
+The schema implements the following cascade rules:
+
+<Note>
+**DELETE CASCADE:**
+- Deleting a user deletes their profile and plans
+- Deleting a plan deletes all daily menus
+- Deleting a daily menu deletes all meal details
+- Deleting a profile removes all taste/restriction/diet type associations
+
+**RESTRICT:**
+- Recipes cannot be deleted if referenced in meal details
+</Note>
+
+## Model Files
+
+All models are located in `backend/app/models/`:
+
+- `user.py` - User authentication model
+- `profile.py` - User nutritional profile
+- `recipe.py` - Recipe and nutritional data
+- `plan.py` - Meal plan container
+- `daily_menu.py` - Daily meal schedule
+- `meal_detail.py` - Individual meal entry
+- `meal_type.py` - Meal time categories
+- `diet_type.py` - Diet style categories
+- `taste.py` - Flavor preferences
+- `restriction.py` - Dietary restrictions
+- Junction tables: `profile_taste.py`, `profile_restriction.py`, `profile_diet_type.py`, `recipe_meal_type.py`, `recipe_diet_type.py`
+
+## Working with Models
+
+Example of accessing related data:
+
+```python
+from app.models import User, Profile, Plan
+from app.database import SessionLocal
+
+db = SessionLocal()
+
+# Get user with profile
+user = db.query(User).filter(User.email == "user@example.com").first()
+profile = user.profile
+
+# Access user's tastes
+tastes = profile.tastes
+
+# Get active plan with menus
+active_plan = db.query(Plan).filter(
+    Plan.user_id == user.id,
+    Plan.active == True
+).first()
+
+for daily_menu in active_plan.daily_menus:
+    for meal in daily_menu.meal_details:
+        print(f"{meal.meal_type}: {meal.recipe.name}")
+```
+
+<Note>
+All relationships use lazy loading by default. For performance-critical queries, use `joinedload()` or `selectinload()` to eager load relationships.
+</Note>

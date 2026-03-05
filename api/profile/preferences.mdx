@@ -1,0 +1,261 @@
+---
+title: "Dietary Preferences"
+description: "Endpoints for retrieving available diet types, dietary restrictions, and taste preferences"
+---
+
+These endpoints provide lists of available dietary preference options that users can select when creating or updating their profile.
+
+## Get Diet Types
+
+<api>GET /api/diet_type</api>
+
+Retrieve all available diet type options.
+
+### Authentication
+
+This endpoint does **not** require authentication.
+
+### Request
+
+No parameters required.
+
+### Response
+
+Returns an array of diet type objects.
+
+<ResponseField name="id" type="integer" required>
+  Diet type ID
+</ResponseField>
+
+<ResponseField name="name" type="string" required>
+  Diet type name (lowercase)
+  
+  **Available diet types:**
+  - `high_protein` - High protein diet
+  - `low_carb` - Low carbohydrate diet
+  - `vegan` - Plant-based diet (no animal products)
+  - `vegetarian` - Vegetarian diet (no meat)
+  - `low_calorie` - Low calorie diet
+  - `high_fiber` - High fiber diet
+  - `high_carb` - High carbohydrate diet
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X GET "https://api.smarteat.com/api/diet_type"
+```
+
+### Example Response
+
+```json
+[
+  {
+    "id": 1,
+    "name": "high_protein"
+  },
+  {
+    "id": 2,
+    "name": "low_carb"
+  },
+  {
+    "id": 3,
+    "name": "vegan"
+  },
+  {
+    "id": 4,
+    "name": "vegetarian"
+  },
+  {
+    "id": 5,
+    "name": "low_calorie"
+  },
+  {
+    "id": 6,
+    "name": "high_fiber"
+  },
+  {
+    "id": 7,
+    "name": "high_carb"
+  }
+]
+```
+
+---
+
+## Get Dietary Restrictions
+
+<api>GET /api/restriction</api>
+
+Retrieve all available dietary restriction options.
+
+### Authentication
+
+This endpoint does **not** require authentication.
+
+### Request
+
+No parameters required.
+
+### Response
+
+Returns an array of dietary restriction objects.
+
+<ResponseField name="id" type="integer" required>
+  Restriction ID
+</ResponseField>
+
+<ResponseField name="name" type="string" required>
+  Restriction name (lowercase)
+  
+  Examples: `gluten free`, `lactose intolerance`, `nut allergy`, `shellfish allergy`
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X GET "https://api.smarteat.com/api/restriction"
+```
+
+### Example Response
+
+```json
+[
+  {
+    "id": 1,
+    "name": "gluten free"
+  },
+  {
+    "id": 2,
+    "name": "lactose intolerance"
+  },
+  {
+    "id": 3,
+    "name": "nut allergy"
+  },
+  {
+    "id": 4,
+    "name": "shellfish allergy"
+  },
+  {
+    "id": 5,
+    "name": "soy allergy"
+  }
+]
+```
+
+---
+
+## Get Taste Preferences
+
+<api>GET /api/taste</api>
+
+Retrieve all available taste preference options.
+
+### Authentication
+
+This endpoint does **not** require authentication.
+
+### Request
+
+No parameters required.
+
+### Response
+
+Returns an array of taste preference objects.
+
+<ResponseField name="id" type="integer" required>
+  Taste preference ID
+</ResponseField>
+
+<ResponseField name="name" type="string" required>
+  Taste preference name (lowercase)
+  
+  Examples: `spicy`, `sweet`, `savory`, `sour`, `bitter`
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X GET "https://api.smarteat.com/api/taste"
+```
+
+### Example Response
+
+```json
+[
+  {
+    "id": 1,
+    "name": "spicy"
+  },
+  {
+    "id": 2,
+    "name": "sweet"
+  },
+  {
+    "id": 3,
+    "name": "savory"
+  },
+  {
+    "id": 4,
+    "name": "sour"
+  },
+  {
+    "id": 5,
+    "name": "bitter"
+  }
+]
+```
+
+---
+
+## Usage in Profile
+
+These preference endpoints are typically used in the following workflow:
+
+1. **Fetch available options** - Call these endpoints to get lists of available diet types, restrictions, and tastes
+2. **Display to user** - Show these options in your UI for the user to select
+3. **Submit with profile** - Include selected preferences when calling the [Update Profile](/api/profile/update-profile) endpoint
+
+### Example Workflow
+
+```javascript
+// 1. Fetch available options
+const dietTypes = await fetch('/api/diet_type').then(r => r.json());
+const restrictions = await fetch('/api/restriction').then(r => r.json());
+const tastes = await fetch('/api/taste').then(r => r.json());
+
+// 2. User selects their preferences from the UI
+// ...
+
+// 3. Submit profile with selected preferences
+await fetch('/api/profile', {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer <token>',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    goal: 'lose_weight',
+    height: 175,
+    weight: 80,
+    // ... other required fields
+    diet_types: ['high_protein', 'low_carb'],
+    restrictions: [
+      { name: 'lactose intolerance' }
+    ],
+    tastes: [
+      { name: 'spicy' },
+      { name: 'savory' }
+    ]
+  })
+});
+```
+
+## Notes
+
+- All three endpoints are **public** and do not require authentication
+- Names are stored and returned in lowercase
+- When updating a profile, you can reference existing items by `id` or create new ones by only providing the `name`
+- Diet types are predefined enums and must match one of the allowed values
+- Restrictions and tastes can be custom values entered by users

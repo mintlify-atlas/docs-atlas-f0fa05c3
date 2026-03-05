@@ -1,80 +1,381 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Get SmartEat AI running on your local machine in minutes
 ---
 
-## Get started in three steps
+## Prerequisites
 
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
+Before you begin, ensure you have the following installed on your system:
 
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="Docker" icon="docker">
+    Docker 20.10+ for container management
+  </Card>
+  <Card title="Docker Compose" icon="layer-group">
+    Docker Compose v2.0+ for orchestration
+  </Card>
+  <Card title="Git" icon="git-alt">
+    Git for cloning the repository
+  </Card>
+  <Card title="Node.js (Optional)" icon="node-js">
+    Node 20+ if developing outside Docker
+  </Card>
 </CardGroup>
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+For GPU acceleration with Ollama (optional), you'll need:
+- NVIDIA GPU with 8GB+ VRAM
+- NVIDIA Docker runtime installed
+</Note>
+
+## Installation
+
+<Steps>
+  <Step title="Clone the Repository">
+    Clone the SmartEat AI repository to your local machine:
+    
+    ```bash
+    git clone https://github.com/SmartEatAI/smart-eat-ai.git
+    cd smart-eat-ai
+    ```
+  </Step>
+
+  <Step title="Configure Environment Variables">
+    Copy the example environment file and configure your settings:
+    
+    ```bash
+    cp .env.example .env
+    ```
+    
+    Edit the `.env` file with your preferred settings:
+    
+    ```bash .env
+    # Database Configuration
+    POSTGRES_USER=smarteatai
+    POSTGRES_PASSWORD=smarteatai
+    POSTGRES_DB=smarteatai
+    DATABASE_URL=postgresql://smarteatai:smarteatai@db:5432/smarteatai
+    
+    # JWT Configuration
+    SECRET_KEY=your-super-secret-key-change-this-in-production-min-32-chars
+    ALGORITHM=HS256
+    ACCESS_TOKEN_EXPIRE_MINUTES=30
+    
+    # Backend Configuration
+    BACKEND_URL=http://localhost:8000
+    FRONTEND_URL=http://localhost:3000
+    
+    # Ollama Configuration
+    OLLAMA_MODEL=llama3.1
+    OLLAMA_BASE_URL=http://ollama:11434
+    CHROMA_EMBEDDING_MODEL=llama3
+    CHROMA_DB=backend/app/data/chroma_db_recipes
+    ```
+    
+    <Warning>
+    Make sure to change the `SECRET_KEY` to a secure random string in production environments. The key must be at least 32 characters long.
+    </Warning>
+  </Step>
+
+  <Step title="Build Docker Containers">
+    Build all the Docker images for the application:
+    
+    ```bash
+    docker compose build
+    ```
+    
+    This will build the following services:
+    - **Backend** - FastAPI application with Python dependencies
+    - **Frontend** - Next.js application with Node.js
+    - **PostgreSQL** - Database server
+    - **Ollama** - LLM inference engine
+    - **Adminer** - Database management interface
+  </Step>
+
+  <Step title="Start the Application">
+    Launch all services using Docker Compose:
+    
+    ```bash
+    docker compose up
+    ```
+    
+    <Tip>
+    Use `docker compose up -d` to run services in detached mode (background).
+    </Tip>
+    
+    Wait for all services to start. You should see logs indicating:
+    - PostgreSQL is ready to accept connections
+    - FastAPI server is running
+    - Next.js has compiled successfully
+  </Step>
+
+  <Step title="Download the Ollama Model">
+    In a new terminal, download the required LLM model inside the Ollama container:
+    
+    ```bash
+    docker exec -it smarteatai_ollama ollama pull llama3.1
+    ```
+    
+    Verify the model was downloaded:
+    
+    ```bash
+    docker exec -it smarteatai_ollama ollama list
+    ```
+    
+    <Note>
+    The first download may take several minutes depending on your internet connection. The model is approximately 4-5GB.
+    </Note>
+  </Step>
+
+  <Step title="Run Database Migrations">
+    Apply database migrations to set up the schema:
+    
+    ```bash
+    docker exec -it smarteatai_backend alembic upgrade head
+    ```
+    
+    This creates all necessary tables for users, recipes, meal plans, and more.
+  </Step>
+
+  <Step title="Seed the Database (Optional)">
+    Populate the database with initial recipe data:
+    
+    ```bash
+    docker exec -it smarteatai_backend python -m app.seeders.run_seed
+    ```
+    
+    This will insert:
+    - Sample users
+    - Recipe categories
+    - Nutritional recipes from the dataset
+    - Example meal plans
+    
+    <Warning>
+    The seeding process may take several minutes as it processes thousands of recipes.
+    </Warning>
+  </Step>
+</Steps>
+
+## Accessing the Application
+
+Once all services are running, you can access SmartEat AI through the following URLs:
+
+<CardGroup cols={2}>
+  <Card title="Frontend Application" icon="window" href="http://localhost:3000">
+    **http://localhost:3000**
+    
+    Main user interface for SmartEat AI
+  </Card>
+  
+  <Card title="Backend API" icon="code" href="http://localhost:8000">
+    **http://localhost:8000**
+    
+    FastAPI backend service
+  </Card>
+  
+  <Card title="API Documentation" icon="book" href="http://localhost:8000/docs">
+    **http://localhost:8000/docs**
+    
+    Interactive Swagger UI for API testing
+  </Card>
+  
+  <Card title="Database Admin" icon="database" href="http://localhost:8080">
+    **http://localhost:8080**
+    
+    Adminer interface for database management
+  </Card>
+</CardGroup>
+
+### API Endpoints
+
+Test the backend health:
+
+<CodeGroup>
+
+```bash cURL
+curl http://localhost:8000/health
+```
+
+```javascript JavaScript
+fetch('http://localhost:8000/health')
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
+
+```python Python
+import requests
+
+response = requests.get('http://localhost:8000/health')
+print(response.json())
+```
+
+</CodeGroup>
+
+## Using SmartEat AI
+
+<Steps>
+  <Step title="Create an Account">
+    Navigate to http://localhost:3000 and register a new account with your email and password.
+  </Step>
+
+  <Step title="Complete Your Profile">
+    After logging in, you'll be prompted to complete your profile with:
+    - Biometric data (weight, height, age, gender)
+    - Activity level (sedentary, moderate, active)
+    - Nutritional goals (weight loss, maintenance, muscle gain)
+    - Dietary preferences and restrictions (vegan, allergies, etc.)
+    - Number of meals per day
+  </Step>
+
+  <Step title="Generate Your Meal Plan">
+    Use the **Chat** feature to interact with Smarty and request a personalized meal plan:
+    
+    > "Create a weekly meal plan for me based on my profile"
+    
+    The AI will generate a complete weekly plan with breakfast, lunch, dinner, and snacks tailored to your needs.
+  </Step>
+
+  <Step title="View Your Dashboard">
+    The **Dashboard** displays today's meals. Mark meals as consumed to track your daily nutritional progress with real-time updates.
+  </Step>
+
+  <Step title="Explore Your Plan">
+    Navigate to **My Plan** to see your complete weekly meal plan with:
+    - Average daily calories and macronutrients
+    - Individual recipe details with nutritional breakdowns
+    - Meal swap functionality powered by the KNN recommendation model
+  </Step>
+</Steps>
+
+## Docker Container Management
+
+### Viewing Logs
+
+Monitor logs for specific services:
+
+```bash
+# All services
+docker compose logs -f
+
+# Specific service
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f ollama
+```
+
+### Stopping the Application
+
+Stop all services:
+
+```bash
+# Stop and remove containers
+docker compose down
+
+# Stop and remove containers + volumes (removes database data)
+docker compose down -v
+```
+
+### Restarting Services
+
+Restart a specific service without rebuilding:
+
+```bash
+docker compose restart backend
+docker compose restart frontend
+```
+
+## Development Workflow
+
+### Backend Development
+
+If you prefer to develop the backend outside Docker:
+
+```bash
+cd backend
+
+# Install dependencies
+pip install -r ../docker/backend/requirements.txt
+
+# Run migrations
+alembic upgrade head
+
+# Start the dev server
+uvicorn app.main:app --reload
+```
+
+### Frontend Development
+
+For frontend development outside Docker:
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start the dev server
+npm run dev
+```
+
+<Note>
+When developing outside Docker, update your `.env` file to point to `localhost` instead of Docker service names:
+- `DATABASE_URL=postgresql://smarteatai:smarteatai@localhost:5432/smarteatai`
+- `OLLAMA_BASE_URL=http://localhost:11434`
+</Note>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Ollama fails to start with GPU">
+    If you don't have an NVIDIA GPU or proper drivers, comment out the `deploy` section in `docker-compose.yml` under the `ollama` service to use CPU-only mode.
+  </Accordion>
+  
+  <Accordion title="Database connection errors">
+    Ensure PostgreSQL is fully started before running migrations. Wait for the log message:
+    ```
+    database system is ready to accept connections
+    ```
+  </Accordion>
+  
+  <Accordion title="Port conflicts">
+    If ports 3000, 8000, 8080, 5432, or 11434 are already in use, modify the port mappings in `docker-compose.yml`:
+    ```yaml
+    ports:
+      - "3001:3000"  # Change host port
+    ```
+  </Accordion>
+  
+  <Accordion title="Model download fails">
+    If `ollama pull` fails, check your internet connection and try:
+    ```bash
+    docker restart smarteatai_ollama
+    docker exec -it smarteatai_ollama ollama pull llama3.1
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+Now that you have SmartEat AI running, explore these resources:
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="book-open" href="/api/authentication/overview">
+    Explore the complete API documentation
+  </Card>
+  
+  <Card title="Architecture" icon="diagram-project" href="/development/architecture">
+    Learn about the system architecture
+  </Card>
+  
+  <Card title="Machine Learning" icon="brain" href="/development/ml-pipeline">
+    Understand the ML recommendation pipeline
+  </Card>
+  
+  <Card title="GitHub Repository" icon="github" href="https://github.com/SmartEatAI/smart-eat-ai">
+    View source code and contribute
+  </Card>
+</CardGroup>
+
+<Note>
+For additional help, refer to the detailed README files in the `backend/` and `frontend/` directories, or check the [project presentation](https://www.canva.com/design/DAHCnfU5p6s/D2NN2HH-_N1PsZlCq9sJpg/view).
 </Note>

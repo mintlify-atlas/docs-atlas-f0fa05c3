@@ -1,0 +1,108 @@
+---
+title: 'Send Chat Message'
+api: 'POST /api/chat/'
+---
+
+Send a message to the SmartEat AI assistant and receive intelligent responses based on your profile and meal plan.
+
+## Authentication
+
+This endpoint requires Bearer token authentication. Include your access token in the Authorization header:
+
+```
+Authorization: Bearer <your_access_token>
+```
+
+## Request
+
+### Query Parameters
+
+<ParamField query="message" type="string" required>
+  The message content to send to the AI assistant. Can be questions about nutrition, meal planning requests, or general health inquiries.
+</ParamField>
+
+## Response
+
+<ResponseField name="response" type="string">
+  The AI assistant's response to your message. This is generated based on your profile, active meal plan, and conversation context.
+</ResponseField>
+
+<ResponseField name="used_tools" type="array" nullable>
+  List of internal tools the AI agent used to generate the response. May include tools for profile access, meal plan management, or recommendation systems.
+  
+  <Expandable title="Tool names">
+    - `get_profile` - Retrieved user profile information
+    - `get_plan` - Accessed current meal plan
+    - `create_plan` - Generated a new meal plan
+    - `swap_recipe` - Recommended recipe substitutions
+  </Expandable>
+</ResponseField>
+
+## Example Request
+
+```bash cURL
+curl -X POST https://api.smarteat.ai/api/chat/ \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -d 'message=I want to create a meal plan for this week'
+```
+
+```python Python
+import requests
+
+url = "https://api.smarteat.ai/api/chat/"
+headers = {
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "Content-Type": "application/json"
+}
+params = {
+    "message": "I want to create a meal plan for this week"
+}
+
+response = requests.post(url, headers=headers, params=params)
+print(response.json())
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.smarteat.ai/api/chat/?message=I%20want%20to%20create%20a%20meal%20plan%20for%20this%20week', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+## Example Response
+
+```json 200 - Success
+{
+  "response": "I'd be happy to help you create a meal plan for this week! Based on your profile, I see you're aiming to lose weight with a target of 1800 calories per day across 3 meals. I've generated a balanced 7-day meal plan that includes breakfast, lunch, and dinner options tailored to your preferences and dietary restrictions. Your new meal plan is now active and ready to view!",
+  "used_tools": [
+    "get_profile",
+    "create_plan"
+  ]
+}
+```
+
+```json 401 - Unauthorized
+{
+  "detail": "Invalid token payload"
+}
+```
+
+```json 500 - Server Error
+{
+  "detail": "Error en el asistente: Connection timeout"
+}
+```
+
+## Notes
+
+- The assistant maintains conversation context using a thread ID based on your user ID and current date
+- Messages are enhanced with your user ID to enable personalized tool usage
+- The AI agent has access to your profile, active meal plan, and can perform actions like creating plans or swapping recipes
+- Response times may vary based on the complexity of your request and whether the AI needs to query multiple data sources

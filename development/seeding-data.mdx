@@ -1,0 +1,439 @@
+---
+title: Seeding Data
+description: Populate the SmartEat AI database with initial test data
+---
+
+## Overview
+
+The seeding system populates the database with initial data for development and testing. SmartEat AI includes seeders for users, categories, profiles, recipes, and meal plans.
+
+## What Gets Seeded
+
+The seeder system creates the following data:
+
+1. **Users** - Test user accounts with hashed passwords
+2. **Categories** - Meal types and diet types
+3. **Profiles** - User nutritional profiles with goals and preferences
+4. **Recipes** - Recipe library from JSON data
+5. **Plans** - Sample meal plans with daily menus
+
+## Running the Seeder
+
+### Local Environment
+
+Run the seeder script directly:
+
+```bash
+python backend/app/seeders/run_seed.py
+```
+
+Or from the backend directory:
+
+```bash
+cd backend
+python app/seeders/run_seed.py
+```
+
+### Docker Environment
+
+Run the seeder inside the backend container:
+
+```bash
+docker exec smarteatai_backend python -m app.seeders.run_seed
+```
+
+Or with PYTHONPATH explicitly set:
+
+```bash
+docker exec smarteatai_backend bash -c "PYTHONPATH=/app python -m app.seeders.run_seed"
+```
+
+<Note>
+**Prerequisites:**
+- Database must be running and accessible
+- All migrations must be applied (`alembic upgrade head`)
+- Environment variables must be configured in `.env`
+</Note>
+
+## Seeder Execution Order
+
+Seeders run in a specific order to respect foreign key constraints:
+
+<Steps>
+
+<Step title="Users">
+Creates test user accounts:
+- ruyi@example.com (password: Ruyi1234)
+- elias@example.com (password: Elias1234)
+- cristina@example.com (password: Cris1234)
+
+From: `backend/app/seeders/users.py:8`
+</Step>
+
+<Step title="Categories">
+Populates meal types and diet types:
+
+**Meal Types:**
+- breakfast
+- lunch
+- dinner
+- snack
+
+**Diet Types:**
+- high_protein
+- low_carb
+- vegan
+- vegetarian
+- low_calorie
+- high_fiber
+- high_carb
+
+From: `backend/app/seeders/categories.py:8`
+</Step>
+
+<Step title="Profiles">
+Creates nutritional profiles for test users with:
+- Physical metrics (height, weight, body type)
+- Goals (lose/maintain/gain weight)
+- Activity levels
+- Macro targets
+- Dietary preferences and restrictions
+
+From: `backend/app/seeders/profiles.py`
+</Step>
+
+<Step title="Recipes">
+Loads recipes from `backend/app/data/recipes.json` including:
+- Recipe names and descriptions
+- Nutritional information (calories, protein, carbs, fat)
+- Meal type associations
+- Diet type compatibility
+- Image URLs and recipe links
+- Ingredients list
+
+From: `backend/app/seeders/recipes.py:7`
+</Step>
+
+<Step title="Plans">
+Generates sample meal plans:
+- Weekly meal schedules
+- Daily menus for each day
+- Meal details with assigned recipes
+- Meal timing and status
+
+From: `backend/app/seeders/plans.py`
+</Step>
+
+</Steps>
+
+## Seeder File Structure
+
+All seeder files are located in `backend/app/seeders/`:
+
+```
+backend/app/seeders/
+├── run_seed.py          # Main seeder orchestrator
+├── users.py             # User account seeder
+├── categories.py        # Meal and diet type seeder
+├── profiles.py          # User profile seeder
+├── recipes.py           # Recipe data seeder
+└── plans.py             # Meal plan seeder
+```
+
+## Main Seeder Script
+
+The `run_seed.py` file orchestrates all seeders:
+
+```python
+from app.database import SessionLocal
+from app.seeders.users import seed_users
+from app.seeders.categories import seed_categories
+from app.seeders.profiles import seed_profiles
+from app.seeders.recipes import seed_recipes
+from app.seeders.plans import seed_plans
+
+def run_seeders():
+    db = SessionLocal()
+    try:
+        seed_users(db)
+        seed_categories(db)
+        seed_profiles(db)
+        seed_recipes(db)
+        seed_plans(db)
+    finally:
+        db.close()
+
+if __name__ == "__main__":
+    run_seeders()
+```
+
+From: `backend/app/seeders/run_seed.py:9`
+
+## Individual Seeder Examples
+
+### User Seeder
+
+The user seeder creates test accounts with hashed passwords:
+
+```python
+def seed_users(db: Session):
+    users_data = [
+        {
+            "name": "Ruyi",
+            "email": "ruyi@example.com",
+            "password": "Ruyi1234",
+        },
+        # ... more users
+    ]
+
+    for user_data in users_data:
+        existing_user = get_user_by_email(db, user_data["email"])
+        
+        if existing_user:
+            print(f"User already exists: {user_data['email']}")
+            continue
+        
+        user_schema = UserCreate(**user_data)
+        AuthService.register_user(db, user_schema)
+        print(f"User created: {user_data['email']}")
+```
+
+From: `backend/app/seeders/users.py:8`
+
+### Category Seeder
+
+The category seeder populates diet and meal types:
+
+```python
+def seed_diet_types(db: Session):
+    diet_types = [
+        "high_protein",
+        "low_carb",
+        "vegan",
+        "vegetarian",
+        "low_calorie",
+        "high_fiber",
+        "high_carb",
+    ]
+
+    for name in diet_types:
+        category_schema = CategoryBase(name=name)
+        exists = existing_diet_type(db, category_schema.name)
+        
+        if not exists:
+            create_diet_type(db, category_schema)
+    
+    db.commit()
+```
+
+From: `backend/app/seeders/categories.py:8`
+
+### Recipe Seeder
+
+The recipe seeder loads from a JSON file:
+
+```python
+def seed_recipes(db: Session):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    recipes_path = os.path.join(current_dir, "..", "data", "recipes.json")
+
+    with open(recipes_path, encoding="utf-8") as f:
+        recipes_data = json.load(f)
+
+    for recipe_data in recipes_data:
+        create_recipe(db, recipe_data)
+
+    db.commit()
+    print("🌱 Recipes seeded successfully")
+```
+
+From: `backend/app/seeders/recipes.py:7`
+
+## Idempotent Seeding
+
+Seeders are designed to be idempotent - running them multiple times won't create duplicate data:
+
+```python
+existing_user = get_user_by_email(db, user_data["email"])
+
+if existing_user:
+    print(f"User already exists: {user_data['email']}")
+    continue
+```
+
+This allows you to safely re-run seeders without clearing the database.
+
+## Recipe Data Format
+
+Recipes are stored in `backend/app/data/recipes.json` with this structure:
+
+```json
+{
+  "name": "Avocado Toast",
+  "calories": 300,
+  "protein": 8,
+  "carbs": 35,
+  "fat": 15,
+  "image_url": "/images/avocado-toast.jpg",
+  "recipe_url": "https://example.com/recipe/123",
+  "recipe_id": 123,
+  "ingredients": "2 slices bread, 1 avocado, salt, pepper",
+  "meal_types": ["breakfast", "lunch"],
+  "diet_types": ["vegetarian", "high_fiber"]
+}
+```
+
+## Customizing Seed Data
+
+### Modify Test Users
+
+Edit `backend/app/seeders/users.py` to add or change test accounts:
+
+```python
+users_data = [
+    {
+        "name": "Your Name",
+        "email": "your.email@example.com",
+        "password": "YourPassword123",
+    },
+]
+```
+
+### Add More Categories
+
+Edit `backend/app/seeders/categories.py` to add meal or diet types:
+
+```python
+meal_types = [
+    "breakfast",
+    "lunch",
+    "dinner",
+    "snack",
+    "brunch",  # New meal type
+]
+```
+
+### Add Custom Recipes
+
+Edit `backend/app/data/recipes.json` to include your own recipes:
+
+```json
+[
+  {
+    "name": "Your Recipe",
+    "calories": 400,
+    "protein": 25,
+    "carbs": 30,
+    "fat": 15,
+    "image_url": "/images/your-recipe.jpg",
+    "recipe_url": "https://yoursite.com/recipe",
+    "recipe_id": 999,
+    "ingredients": "list of ingredients",
+    "meal_types": ["lunch", "dinner"],
+    "diet_types": ["high_protein"]
+  }
+]
+```
+
+## Clearing Seeded Data
+
+To remove seeded data and start fresh:
+
+<Steps>
+
+<Step title="Downgrade migrations">
+<CodeGroup>
+```bash Local
+alembic downgrade base
+```
+
+```bash Docker
+docker exec smarteatai_backend alembic downgrade base
+```
+</CodeGroup>
+</Step>
+
+<Step title="Upgrade migrations">
+<CodeGroup>
+```bash Local
+alembic upgrade head
+```
+
+```bash Docker
+docker exec smarteatai_backend alembic upgrade head
+```
+</CodeGroup>
+</Step>
+
+<Step title="Run seeders again">
+<CodeGroup>
+```bash Local
+python backend/app/seeders/run_seed.py
+```
+
+```bash Docker
+docker exec smarteatai_backend python -m app.seeders.run_seed
+```
+</CodeGroup>
+</Step>
+
+</Steps>
+
+<Note>
+**Warning:** This will delete ALL data in the database. Only use in development environments.
+</Note>
+
+## Troubleshooting
+
+### Import Errors
+
+If you get import errors when running seeders:
+
+```bash
+# Make sure you're in the correct directory
+cd backend
+
+# Or set PYTHONPATH
+export PYTHONPATH=/path/to/backend
+python app/seeders/run_seed.py
+```
+
+### Database Connection Issues
+
+Ensure your `.env` file has the correct database URL:
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/smarteatai
+```
+
+### Foreign Key Constraint Errors
+
+Make sure migrations are up to date:
+
+```bash
+alembic upgrade head
+```
+
+### JSON File Not Found
+
+The recipes seeder expects `backend/app/data/recipes.json` to exist. Verify the file path and structure.
+
+## Best Practices
+
+<Note>
+**Seeding guidelines:**
+
+1. Always run migrations before seeding
+2. Use seeders for development and testing only
+3. Don't use seed data in production
+4. Keep seed data realistic but minimal
+5. Document any custom seed data
+6. Make seeders idempotent to avoid duplicates
+7. Test seeders after schema changes
+</Note>
+
+## See Also
+
+- [Database Schema](/development/database-schema) - Understanding the database structure
+- [Database Migrations](/development/migrations) - Managing schema changes
+- [Backend README](https://github.com/your-repo/backend) - Backend setup guide

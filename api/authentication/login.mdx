@@ -1,0 +1,197 @@
+---
+title: 'Login'
+description: 'Authenticate and receive an access token'
+api: 'POST /auth/login'
+---
+
+Authenticate with existing credentials and receive an access token.
+
+## Endpoint
+
+```http
+POST /auth/login
+```
+
+## Request Body
+
+<ParamField body="email" type="string" required>
+  The user's registered email address. Maximum 255 characters.
+  
+  **Example:** `"john.doe@example.com"`
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  The user's password. Must be at least 8 characters.
+  
+  **Example:** `"SecurePass123"`
+</ParamField>
+
+## Response
+
+<ResponseField name="access_token" type="string">
+  JWT access token for authentication. Include this in the `Authorization` header for subsequent requests.
+  
+  **Example:** `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MTcwOTU1MTIwMH0.abc123"`
+</ResponseField>
+
+<ResponseField name="token_type" type="string">
+  The type of token. Always returns `"bearer"`.
+</ResponseField>
+
+<ResponseField name="user" type="object">
+  The authenticated user object.
+  
+  <Expandable title="user properties">
+    <ResponseField name="id" type="integer">
+      Unique identifier for the user.
+      
+      **Example:** `1`
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+      The user's full name.
+      
+      **Example:** `"John Doe"`
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+      The user's email address.
+      
+      **Example:** `"john.doe@example.com"`
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example Request
+
+```bash cURL
+curl -X POST "https://api.smarteat.ai/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john.doe@example.com",
+    "password": "SecurePass123"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.smarteat.ai/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    email: 'john.doe@example.com',
+    password: 'SecurePass123'
+  })
+});
+
+const data = await response.json();
+console.log(data.access_token);
+
+// Store the token for subsequent requests
+localStorage.setItem('access_token', data.access_token);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.smarteat.ai/auth/login',
+    json={
+        'email': 'john.doe@example.com',
+        'password': 'SecurePass123'
+    }
+)
+
+data = response.json()
+print(data['access_token'])
+
+# Store the token for subsequent requests
+access_token = data['access_token']
+```
+
+## Example Response
+
+```json 200 OK
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MTcwOTU1MTIwMH0.abc123def456",
+  "token_type": "bearer",
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john.doe@example.com"
+  }
+}
+```
+
+## Error Responses
+
+```json 401 Unauthorized - Invalid Credentials
+{
+  "detail": "Invalid email or password"
+}
+```
+
+```json 422 Unprocessable Entity - Missing Fields
+{
+  "detail": [
+    {
+      "type": "missing",
+      "loc": ["body", "email"],
+      "msg": "Field required",
+      "input": {"password": "SecurePass123"}
+    }
+  ]
+}
+```
+
+```json 422 Unprocessable Entity - Invalid Email Format
+{
+  "detail": [
+    {
+      "type": "value_error",
+      "loc": ["body", "email"],
+      "msg": "value is not a valid email address",
+      "input": "not-an-email"
+    }
+  ]
+}
+```
+
+```json 500 Internal Server Error
+{
+  "detail": "Error during authentication"
+}
+```
+
+## Using the Access Token
+
+After successful login, use the returned access token in the `Authorization` header for authenticated requests:
+
+```bash
+curl -X GET "https://api.smarteat.ai/auth/me" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+## Token Expiration
+
+Access tokens expire after **3000 minutes** (50 hours). When a token expires, you will receive a `401 Unauthorized` response and must login again to obtain a new token.
+
+## Security Considerations
+
+<Warning>
+  Always use HTTPS when transmitting credentials and tokens.
+</Warning>
+
+- Never store passwords in plain text
+- Use secure storage for access tokens (e.g., HTTP-only cookies, encrypted storage)
+- Implement proper error handling to avoid leaking information
+- Email addresses are case-insensitive (automatically converted to lowercase)
+- Failed login attempts should not reveal whether the email exists
+
+## Notes
+
+- Email addresses are automatically converted to lowercase and trimmed
+- The same token format is used for both registration and login
+- Both email and password must match exactly for authentication to succeed
+- The response includes the full user object for convenience

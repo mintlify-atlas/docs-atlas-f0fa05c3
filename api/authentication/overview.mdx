@@ -1,0 +1,128 @@
+---
+title: 'Authentication Overview'
+description: 'Learn how authentication works in SmartEat AI'
+---
+
+## How Authentication Works
+
+SmartEat AI uses JWT (JSON Web Token) based authentication to secure API endpoints. When you register or login, you receive an access token that must be included in subsequent requests to protected endpoints.
+
+### Authentication Flow
+
+1. **Register** or **Login** to receive an access token
+2. Include the token in the `Authorization` header of your requests
+3. The token is validated on each request to protected endpoints
+4. Tokens expire after a configured period and must be refreshed
+
+## JWT Tokens
+
+JSON Web Tokens (JWT) are used to authenticate users. Each token contains:
+
+- **Subject (sub)**: The user's email address
+- **Expiration (exp)**: Token expiration timestamp
+- **Algorithm**: HS256 (HMAC with SHA-256)
+
+Tokens are signed with a secret key to ensure they cannot be tampered with.
+
+## Bearer Token Format
+
+All authenticated requests must include the access token in the `Authorization` header using the Bearer scheme:
+
+```http
+Authorization: Bearer <access_token>
+```
+
+### Example Request
+
+```bash
+curl -X GET "https://api.smarteat.ai/auth/me" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+## Including Tokens in Requests
+
+### cURL Example
+
+```bash
+curl -X GET "https://api.smarteat.ai/auth/me" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### JavaScript/Fetch Example
+
+```javascript
+fetch('https://api.smarteat.ai/auth/me', {
+  headers: {
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
+  }
+})
+```
+
+### Python Example
+
+```python
+import requests
+
+headers = {
+    'Authorization': f'Bearer {access_token}',
+    'Content-Type': 'application/json'
+}
+
+response = requests.get('https://api.smarteat.ai/auth/me', headers=headers)
+```
+
+## Token Expiration
+
+Access tokens expire after **3000 minutes** (50 hours) by default. When a token expires, you will receive a `401 Unauthorized` response:
+
+```json
+{
+  "detail": "Invalid or expired token"
+}
+```
+
+When this happens, you must login again to obtain a new access token.
+
+## Security Best Practices
+
+<Warning>
+  Never expose your access tokens in client-side code, public repositories, or logs.
+</Warning>
+
+- Store tokens securely (e.g., secure HTTP-only cookies, encrypted storage)
+- Use HTTPS for all API requests
+- Implement token refresh mechanisms in production applications
+- Never commit tokens to version control
+- Rotate your SECRET_KEY regularly in production
+
+## Protected Endpoints
+
+The following endpoints require authentication:
+
+- `/auth/me` - Get current user information
+- `/profiles/*` - All profile management endpoints
+- `/plans/*` - All meal plan endpoints
+- `/daily-menus/*` - All daily menu endpoints
+
+## Error Responses
+
+### 401 Unauthorized
+
+Returned when the token is missing, invalid, or expired:
+
+```json
+{
+  "detail": "Invalid or expired token"
+}
+```
+
+### 403 Forbidden
+
+Returned when the user doesn't have permission to access a resource:
+
+```json
+{
+  "detail": "Not authorized to access this resource"
+}
+```

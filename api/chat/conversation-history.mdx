@@ -1,0 +1,127 @@
+---
+title: 'Get Conversation History'
+api: 'GET /api/chat/history'
+---
+
+<Warning>
+  This endpoint is currently not implemented in the backend. The chat system uses LangGraph's built-in memory management with thread-based context.
+</Warning>
+
+## Planned Implementation
+
+Conversation history is maintained automatically by the AI assistant using thread IDs formatted as `{user_id}-{date}`. Each day creates a new conversation thread, and context is preserved within the same day's interactions.
+
+## Alternative: Thread-Based Context
+
+The SmartEat AI chat system currently uses LangGraph's state management to maintain conversation context:
+
+- **Thread ID Format**: `{user_id}-{current_date}`
+- **Context Window**: Conversations are scoped to the current day
+- **State Persistence**: Message history is maintained in-memory during the session
+- **Profile & Plan Access**: The assistant always has access to your current profile and active meal plan
+
+## Example Current Behavior
+
+When you send multiple messages in a day, the assistant maintains context:
+
+```bash First Message
+curl -X POST https://api.smarteat.ai/api/chat/ \
+  -H "Authorization: Bearer <token>" \
+  -d 'message=Create a meal plan for me'
+
+# Response: "I've created a 7-day meal plan..."
+```
+
+```bash Follow-up Message (Same Day)
+curl -X POST https://api.smarteat.ai/api/chat/ \
+  -H "Authorization: Bearer <token>" \
+  -d 'message=Can you swap the dinner for day 1?'
+
+# Response: "I'll swap the dinner recipe from your meal plan..." 
+# (Assistant remembers the plan it just created)
+```
+
+## Schema Definition
+
+When this endpoint is implemented, it will return conversation history using the following schema:
+
+### Response Structure
+
+<ResponseField name="history" type="array">
+  Array of messages in chronological order
+  
+  <Expandable title="Message object">
+    <ResponseField name="role" type="enum">
+      Role of the message sender
+      - `user` - Message from the user
+      - `chef` - Message from the AI assistant
+    </ResponseField>
+    
+    <ResponseField name="content" type="string">
+      The message content
+    </ResponseField>
+    
+    <ResponseField name="timestamp" type="string">
+      ISO 8601 timestamp of when the message was sent
+    </ResponseField>
+    
+    <ResponseField name="original_recipe" type="object" nullable>
+      Only present for suggestion messages - the original recipe being replaced
+    </ResponseField>
+    
+    <ResponseField name="suggested_recipe" type="object" nullable>
+      Only present for suggestion messages - the new recipe being suggested
+    </ResponseField>
+    
+    <ResponseField name="accepted" type="boolean">
+      Only present for suggestion messages - whether the user accepted the suggestion
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Future Implementation Example
+
+```json 200 - Success (Planned)
+{
+  "history": [
+    {
+      "role": "user",
+      "content": "Create a meal plan for this week",
+      "timestamp": "2026-03-05T10:30:00Z"
+    },
+    {
+      "role": "chef",
+      "content": "I've created a 7-day meal plan for you with 3 meals per day...",
+      "timestamp": "2026-03-05T10:30:05Z"
+    },
+    {
+      "role": "user",
+      "content": "Can you swap the dinner for day 1?",
+      "timestamp": "2026-03-05T10:32:00Z"
+    },
+    {
+      "role": "chef",
+      "content": "I've found a similar recipe that matches your preferences...",
+      "timestamp": "2026-03-05T10:32:03Z",
+      "original_recipe": {
+        "id": 1,
+        "name": "Grilled Chicken Salad",
+        "calories": 450
+      },
+      "suggested_recipe": {
+        "id": 2,
+        "name": "Mediterranean Chicken Bowl",
+        "calories": 480
+      },
+      "accepted": true
+    }
+  ]
+}
+```
+
+## Notes
+
+- Conversation history may be implemented in a future version
+- Current implementation relies on LangGraph's state management
+- Each day starts a new conversation thread
+- Consider implementing persistent storage for long-term conversation history

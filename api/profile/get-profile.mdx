@@ -1,0 +1,196 @@
+---
+title: "Get Profile"
+api: "GET /api/profile"
+description: "Retrieve the authenticated user's profile information including fitness goals, body metrics, dietary preferences, and nutritional targets"
+---
+
+## Authentication
+
+This endpoint requires authentication. Include a valid JWT token in the Authorization header:
+
+```
+Authorization: Bearer <token>
+```
+
+## Request
+
+No parameters required. The profile is retrieved for the currently authenticated user.
+
+## Response
+
+<ResponseField name="id" type="integer" required>
+  Profile ID
+</ResponseField>
+
+<ResponseField name="user_id" type="integer" required>
+  Associated User ID
+</ResponseField>
+
+<ResponseField name="goal" type="string" required>
+  User's fitness goal
+  
+  **Allowed values:** `lose_weight`, `maintain_weight`, `gain_weight`
+</ResponseField>
+
+<ResponseField name="height" type="float" required>
+  User's height in centimeters (140-220)
+</ResponseField>
+
+<ResponseField name="weight" type="float" required>
+  User's weight in kilograms (35-300)
+</ResponseField>
+
+<ResponseField name="body_type" type="string" required>
+  User's body type
+  
+  **Allowed values:** `lean`, `normal`, `stocky`, `obese`
+</ResponseField>
+
+<ResponseField name="gender" type="string" required>
+  User's gender
+  
+  **Allowed values:** `male`, `female`
+</ResponseField>
+
+<ResponseField name="meals_per_day" type="integer" required>
+  Number of meals per day (1-6)
+</ResponseField>
+
+<ResponseField name="activity_level" type="string" required>
+  User's activity level
+  
+  **Allowed values:** `low`, `medium`, `high`
+</ResponseField>
+
+<ResponseField name="birth_date" type="string" required>
+  User's birth date in ISO format (YYYY-MM-DD). User must be 16-100 years old.
+</ResponseField>
+
+<ResponseField name="body_fat_percentage" type="float">
+  User's body fat percentage (optional, >= 0.0)
+</ResponseField>
+
+<ResponseField name="calories_target" type="float">
+  User's target calories (optional, >= 0.0)
+</ResponseField>
+
+<ResponseField name="protein_target" type="float">
+  User's target protein in grams (optional, >= 0.0)
+</ResponseField>
+
+<ResponseField name="carbs_target" type="float">
+  User's target carbs in grams (optional, >= 0.0)
+</ResponseField>
+
+<ResponseField name="fat_target" type="float">
+  User's target fat in grams (optional, >= 0.0)
+</ResponseField>
+
+<ResponseField name="tastes" type="array">
+  List of user's taste preferences
+  
+  <ResponseField name="id" type="integer">
+    Taste category ID
+  </ResponseField>
+  
+  <ResponseField name="name" type="string">
+    Taste category name (lowercase)
+  </ResponseField>
+</ResponseField>
+
+<ResponseField name="restrictions" type="array">
+  List of user's dietary restrictions
+  
+  <ResponseField name="id" type="integer">
+    Restriction category ID
+  </ResponseField>
+  
+  <ResponseField name="name" type="string">
+    Restriction category name (lowercase)
+  </ResponseField>
+</ResponseField>
+
+<ResponseField name="diet_types" type="array">
+  List of user's diet types
+  
+  <ResponseField name="id" type="integer">
+    Diet type category ID
+  </ResponseField>
+  
+  <ResponseField name="name" type="string">
+    Diet type name (lowercase)
+  </ResponseField>
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X GET "https://api.smarteat.com/api/profile" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+## Example Response
+
+```json
+{
+  "id": 1,
+  "user_id": 42,
+  "goal": "lose_weight",
+  "height": 175.0,
+  "weight": 80.5,
+  "body_type": "normal",
+  "gender": "male",
+  "meals_per_day": 4,
+  "activity_level": "medium",
+  "birth_date": "1990-05-15",
+  "body_fat_percentage": 18.5,
+  "calories_target": 2200.0,
+  "protein_target": 165.0,
+  "carbs_target": 220.0,
+  "fat_target": 73.0,
+  "tastes": [
+    {
+      "id": 1,
+      "name": "spicy"
+    },
+    {
+      "id": 3,
+      "name": "savory"
+    }
+  ],
+  "restrictions": [
+    {
+      "id": 2,
+      "name": "lactose intolerance"
+    }
+  ],
+  "diet_types": [
+    {
+      "id": 5,
+      "name": "high_protein"
+    }
+  ]
+}
+```
+
+## Error Responses
+
+<ResponseField name="404 Not Found" type="error">
+  Profile does not exist for the authenticated user
+  
+  ```json
+  {
+    "detail": "Profile not existing."
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="401 Unauthorized" type="error">
+  Authentication token is missing or invalid
+  
+  ```json
+  {
+    "detail": "Not authenticated"
+  }
+  ```
+</ResponseField>

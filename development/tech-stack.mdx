@@ -1,0 +1,761 @@
+---
+title: 'Technology Stack'
+description: 'Detailed breakdown of technologies, frameworks, and tools used in SmartEat AI'
+icon: 'layer-group'
+---
+
+## Overview
+
+SmartEat AI is built with a modern, production-ready technology stack that prioritizes developer experience, performance, and scalability. This page provides an in-depth look at each technology choice and its role in the system.
+
+## Frontend Technologies
+
+### Core Framework
+
+<CardGroup cols={2}>
+  <Card title="Next.js 16" icon="react" color="#000000">
+    **React Framework for Production**
+    
+    - App Router architecture for file-based routing
+    - Server-side rendering (SSR) and static generation (SSG)
+    - Built-in API routes and middleware
+    - Automatic code splitting and optimization
+    - Hot module replacement for fast development
+    
+    [Documentation →](https://nextjs.org/docs)
+  </Card>
+  
+  <Card title="React 19" icon="atom" color="#61dafb">
+    **UI Library**
+    
+    - Component-based architecture
+    - Virtual DOM for efficient updates
+    - Hooks for state and side effects
+    - Context API for global state management
+    - Concurrent rendering features
+    
+    [Documentation →](https://react.dev/)
+  </Card>
+</CardGroup>
+
+### Language & Type Safety
+
+<Tabs>
+  <Tab title="TypeScript">
+    **TypeScript 5**
+    
+    SmartEat AI is fully written in TypeScript for enhanced developer experience and code reliability:
+    
+    ```typescript
+    // Example: Type-safe API response
+    interface MealPlanResponse {
+      id: number;
+      userId: number;
+      weekStart: string;
+      dailyMenus: DailyMenu[];
+      totalCalories: number;
+      macros: MacronutrientBreakdown;
+    }
+    ```
+    
+    **Benefits:**
+    - Compile-time error detection
+    - IntelliSense and autocomplete
+    - Self-documenting code through types
+    - Easier refactoring and maintenance
+    
+    Configuration: `tsconfig.json` with strict mode enabled
+  </Tab>
+  
+  <Tab title="Zod">
+    **Schema Validation**
+    
+    Zod provides runtime type validation for forms and API data:
+    
+    ```typescript
+    import { z } from 'zod';
+    
+    const loginSchema = z.object({
+      email: z.string().email(),
+      password: z.string().min(8)
+    });
+    
+    type LoginFormData = z.infer<typeof loginSchema>;
+    ```
+    
+    Used throughout the frontend for:
+    - Form validation with React Hook Form
+    - API response validation
+    - Type inference from schemas
+  </Tab>
+</Tabs>
+
+### Styling & UI Components
+
+<CardGroup cols={2}>
+  <Card title="Tailwind CSS 4" icon="palette" color="#38bdf8">
+    **Utility-First CSS Framework**
+    
+    - Rapid UI development with utility classes
+    - Responsive design with mobile-first approach
+    - Custom design system configuration
+    - PostCSS integration
+    - Production CSS optimization (PurgeCSS)
+    
+    ```jsx
+    <div className="flex items-center gap-4 p-6 bg-white rounded-lg shadow-md">
+      <Avatar className="h-12 w-12" />
+      <div className="flex flex-col">
+        <h3 className="font-semibold text-lg">User Name</h3>
+        <p className="text-sm text-gray-600">Active Plan</p>
+      </div>
+    </div>
+    ```
+  </Card>
+  
+  <Card title="Radix UI" icon="cube" color="#8b5cf6">
+    **Unstyled UI Primitives**
+    
+    - Accessible components following WAI-ARIA
+    - Dialog, Slot, and other primitives
+    - Composable and customizable
+    - Keyboard navigation support
+    
+    Used for building:
+    - Modal dialogs
+    - Dropdown menus
+    - Command palettes
+  </Card>
+</CardGroup>
+
+### UI Component Library
+
+**Custom Component System** built on top of Radix UI and Tailwind:
+
+- **Cards**: Recipe cards, plan cards, macronutrient cards, progress cards
+- **Forms**: Input fields, select dropdowns, multi-step forms
+- **Layout**: Navbar, sidebar, footer, sections
+- **Chat**: Message bubbles, typing indicators, proposal cards
+- **Carousels**: Image galleries using Embla Carousel
+
+All components are located in `/frontend/components/ui/` and follow consistent design patterns.
+
+### Additional Frontend Libraries
+
+| Library | Purpose | Version |
+|---------|---------|---------|
+| **React Hook Form** | Form state management and validation | ^7.71.1 |
+| **Lucide React** | Icon library with 1000+ consistent icons | ^0.563.0 |
+| **React Icons** | Additional icon sets (FaIcons, etc.) | ^5.5.0 |
+| **React Markdown** | Render markdown in chat messages | ^10.1.0 |
+| **clsx / tailwind-merge** | Conditional class name utilities | Latest |
+| **Embla Carousel** | Touch-friendly carousels | ^8.6.0 |
+
+## Backend Technologies
+
+### Core Framework
+
+<Card title="FastAPI" icon="bolt" color="#009688">
+  **Modern Python Web Framework**
+  
+  FastAPI powers the entire backend API with high performance and modern Python features:
+  
+  - **Async Support**: Built on Starlette for async request handling
+  - **Automatic Docs**: Swagger UI and ReDoc generated from code
+  - **Type Hints**: Leverages Python type annotations for validation
+  - **Dependency Injection**: Clean separation of concerns
+  - **WebSocket Support**: Real-time communication capabilities
+  
+  ```python
+  from fastapi import FastAPI, Depends
+  from app.api.deps import get_current_user
+  
+  app = FastAPI(title="SmartEat AI API")
+  
+  @app.get("/api/profile", response_model=ProfileResponse)
+  async def get_profile(current_user: User = Depends(get_current_user)):
+      return await ProfileService.get_by_user_id(current_user.id)
+  ```
+  
+  **Key Features Used:**
+  - Path operation decorators (`@app.get`, `@app.post`)
+  - Automatic request validation with Pydantic
+  - Dependency injection for auth, database sessions
+  - Background tasks for async operations
+  
+  [Documentation →](https://fastapi.tiangolo.com/)
+</Card>
+
+### Web Server
+
+**Uvicorn** - Lightning-fast ASGI server:
+- Production-ready ASGI implementation
+- WebSocket support
+- Auto-reload in development
+- Graceful shutdown handling
+
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Database Technologies
+
+<Tabs>
+  <Tab title="PostgreSQL">
+    **PostgreSQL 15**
+    
+    Primary relational database for all structured data:
+    
+    **Schema Overview:**
+    ```sql
+    -- Users and authentication
+    CREATE TABLE users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        hashed_password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW()
+    );
+    
+    -- Recipes with nutritional info
+    CREATE TABLE recipes (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        calories FLOAT,
+        protein FLOAT,
+        carbohydrates FLOAT,
+        fat FLOAT,
+        diet_type_id INTEGER REFERENCES diet_types(id),
+        -- ... more fields
+    );
+    
+    -- Meal plans
+    CREATE TABLE plans (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
+        start_date DATE,
+        end_date DATE,
+        total_calories INTEGER
+    );
+    ```
+    
+    **Features Used:**
+    - JSONB for flexible metadata storage
+    - Foreign key constraints for data integrity
+    - Indexes on frequently queried columns
+    - Transaction support for complex operations
+  </Tab>
+  
+  <Tab title="SQLAlchemy">
+    **SQLAlchemy 2.x**
+    
+    Python ORM for type-safe database access:
+    
+    ```python
+    from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+    from sqlalchemy import String, Float, ForeignKey
+    
+    class Base(DeclarativeBase):
+        pass
+    
+    class Recipe(Base):
+        __tablename__ = "recipes"
+        
+        id: Mapped[int] = mapped_column(primary_key=True)
+        name: Mapped[str] = mapped_column(String(255))
+        calories: Mapped[float] = mapped_column(Float)
+        protein: Mapped[float] = mapped_column(Float)
+        # ... relationships
+        diet_type: Mapped["DietType"] = relationship()
+    ```
+    
+    **Benefits:**
+    - Type-safe queries with Python
+    - Relationship handling (one-to-many, many-to-many)
+    - Connection pooling
+    - Query optimization
+  </Tab>
+  
+  <Tab title="Alembic">
+    **Alembic**
+    
+    Database migration tool for version control:
+    
+    ```bash
+    # Create migration
+    alembic revision --autogenerate -m "add recipe tags"
+    
+    # Apply migration
+    alembic upgrade head
+    
+    # Rollback
+    alembic downgrade -1
+    ```
+    
+    Migration files track schema changes:
+    ```python
+    def upgrade():
+        op.add_column('recipes', 
+            sa.Column('tags', sa.String(), nullable=True))
+    
+    def downgrade():
+        op.drop_column('recipes', 'tags')
+    ```
+  </Tab>
+</Tabs>
+
+### Authentication & Security
+
+<CardGroup cols={2}>
+  <Card title="JWT (PyJWT)" icon="key" color="#fb923c">
+    **JSON Web Tokens**
+    
+    Stateless authentication using signed tokens:
+    
+    ```python
+    from datetime import datetime, timedelta
+    import jwt
+    
+    def create_access_token(data: dict):
+        to_encode = data.copy()
+        expire = datetime.utcnow() + timedelta(minutes=30)
+        to_encode.update({"exp": expire})
+        return jwt.encode(to_encode, SECRET_KEY, algorithm="HS256")
+    ```
+    
+    Tokens include:
+    - User ID
+    - Email
+    - Expiration timestamp
+    - Token type (access/refresh)
+  </Card>
+  
+  <Card title="Bcrypt" icon="shield-check" color="#ef4444">
+    **Password Hashing**
+    
+    Secure password storage with salted hashing:
+    
+    ```python
+    import bcrypt
+    
+    def hash_password(password: str) -> str:
+        salt = bcrypt.gensalt()
+        return bcrypt.hashpw(
+            password.encode('utf-8'), 
+            salt
+        ).decode('utf-8')
+    
+    def verify_password(plain: str, hashed: str) -> bool:
+        return bcrypt.checkpw(
+            plain.encode('utf-8'),
+            hashed.encode('utf-8')
+        )
+    ```
+  </Card>
+</CardGroup>
+
+### Data Validation
+
+**Pydantic** - Data validation using Python type annotations:
+
+```python
+from pydantic import BaseModel, EmailStr, Field
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=8)
+    
+class ProfileCreate(BaseModel):
+    weight: float = Field(..., gt=0, lt=500)
+    height: float = Field(..., gt=0, lt=300)
+    age: int = Field(..., gt=0, lt=150)
+    activity_level: str
+    goal: str
+```
+
+**Benefits:**
+- Automatic request validation
+- Type coercion and conversion
+- Custom validators
+- JSON schema generation for OpenAPI
+
+## AI & Machine Learning Stack
+
+### Large Language Models
+
+<Card title="Ollama" icon="microchip" color="#6366f1">
+  **Local LLM Runtime**
+  
+  Ollama provides on-premises LLM inference without external API calls:
+  
+  **Models Used:**
+  - **Llama 3**: 8B parameter model for general chat
+  - **Llama 3.1**: Improved version with larger context window
+  - **Nomic-embed-text**: Embedding model for semantic search
+  
+  **Configuration:**
+  ```yaml
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_CONTEXT_LENGTH=32768
+      - OLLAMA_NUM_PARALLEL=1
+      - OLLAMA_MAX_LOADED_MODELS=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia  # GPU acceleration
+              count: all
+              capabilities: [gpu]
+  ```
+  
+  **Integration:**
+  ```python
+  from langchain_ollama import ChatOllama, OllamaEmbeddings
+  
+  llm = ChatOllama(
+      model="llama3.1",
+      base_url="http://ollama:11434",
+      temperature=0,
+      num_ctx=16384
+  )
+  
+  embeddings = OllamaEmbeddings(
+      model="nomic-embed-text",
+      base_url="http://ollama:11434"
+  )
+  ```
+  
+  [Documentation →](https://ollama.com/)
+</Card>
+
+### AI Orchestration
+
+<Tabs>
+  <Tab title="LangChain">
+    **LangChain**
+    
+    Framework for building LLM-powered applications:
+    
+    ```python
+    from langchain_core.prompts import ChatPromptTemplate
+    from langchain_core.output_parsers import StrOutputParser
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "You are Smarty, a nutrition assistant."),
+        ("user", "{input}")
+    ])
+    
+    chain = prompt | llm | StrOutputParser()
+    response = await chain.ainvoke({"input": user_message})
+    ```
+    
+    **Components Used:**
+    - **Prompts**: Template-based prompt engineering
+    - **Chains**: Sequential LLM calls with data flow
+    - **Output Parsers**: Structured output from LLMs
+    - **Memory**: Conversation history management
+    - **Tools**: Custom tools for database queries
+  </Tab>
+  
+  <Tab title="LangGraph">
+    **LangGraph**
+    
+    State machine for complex AI workflows:
+    
+    ```python
+    from langgraph.graph import StateGraph
+    from langgraph.prebuilt import ToolNode
+    
+    workflow = StateGraph(AgentState)
+    workflow.add_node("agent", agent_node)
+    workflow.add_node("tools", ToolNode(tools))
+    workflow.add_edge("agent", "tools")
+    workflow.add_conditional_edges("tools", should_continue)
+    
+    app = workflow.compile()
+    ```
+    
+    **Smarty Agent Workflow:**
+    1. Classify user intent (generate plan, modify meal, query info)
+    2. Fetch user profile and preferences
+    3. Query recipes from database
+    4. Apply KNN recommendations if needed
+    5. Generate structured response
+    6. Save changes to database
+    
+    This enables multi-step reasoning and tool calling.
+  </Tab>
+  
+  <Tab title="ChromaDB">
+    **ChromaDB**
+    
+    Vector database for semantic search:
+    
+    ```python
+    from langchain_chroma import Chroma
+    
+    vector_db = Chroma(
+        persist_directory="/app/data/chroma_db_recipes",
+        embedding_function=embeddings
+    )
+    
+    # Semantic search
+    results = vector_db.similarity_search(
+        "low-carb chicken recipe",
+        k=5,
+        filter={"diet_type": "keto"}
+    )
+    ```
+    
+    **Note:** Currently in development. Direct SQL queries used in production for better filtering control.
+  </Tab>
+</Tabs>
+
+### Machine Learning
+
+<CardGroup cols={2}>
+  <Card title="scikit-learn" icon="flask" color="#f97316">
+    **Machine Learning Library**
+    
+    Powers the recipe recommendation engine:
+    
+    ```python
+    from sklearn.neighbors import NearestNeighbors
+    from sklearn.preprocessing import StandardScaler
+    import joblib
+    
+    # Load pre-trained model
+    knn = joblib.load('knn.joblib')
+    scaler = joblib.load('scaler.joblib')
+    df_recipes = joblib.load('df_recetas.joblib')
+    
+    # Get recommendations
+    def recommend_similar(recipe_features, n=5):
+        scaled = scaler.transform([recipe_features])
+        distances, indices = knn.kneighbors(scaled, n_neighbors=n)
+        return df_recipes.iloc[indices[0]]
+    ```
+    
+    **Model Details:**
+    - Algorithm: K-Nearest Neighbors (KNN)
+    - Features: Calories, protein, carbs, fat, diet type, meal type
+    - Training data: 91,056 recipes
+    - Metric: Euclidean distance
+  </Card>
+  
+  <Card title="Data Science Tools" icon="chart-line" color="#10b981">
+    **pandas & NumPy**
+    
+    Data manipulation and numerical computing:
+    
+    ```python
+    import pandas as pd
+    import numpy as np
+    
+    # Recipe preprocessing
+    df = pd.read_json('recipes.json')
+    df['protein_ratio'] = df['ProteinContent'] / df['Calories']
+    df['diet_label'] = df['Keywords'].apply(classify_diet)
+    
+    # Feature scaling
+    from sklearn.preprocessing import StandardScaler
+    scaler = StandardScaler()
+    features_scaled = scaler.fit_transform(df[feature_cols])
+    ```
+    
+    Used in the data pipeline (notebooks/) for:
+    - Exploratory data analysis (EDA)
+    - Feature engineering
+    - Model training and evaluation
+  </Card>
+</CardGroup>
+
+## DevOps & Infrastructure
+
+### Containerization
+
+<Card title="Docker & Docker Compose" icon="docker" color="#2496ed">
+  **Container Orchestration**
+  
+  Complete application stack runs in Docker containers:
+  
+  ```yaml
+  services:
+    backend:
+      build: ./docker/backend
+      ports: ["8000:8000"]
+      depends_on: [db, ollama]
+    
+    frontend:
+      build: ./docker/frontend
+      ports: ["3000:3000"]
+      environment:
+        - NODE_ENV=development
+    
+    db:
+      image: postgres:15
+      ports: ["5432:5432"]
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+    
+    ollama:
+      image: ollama/ollama:latest
+      ports: ["11434:11434"]
+      volumes:
+        - ollama_data:/root/.ollama
+  ```
+  
+  **Benefits:**
+  - Consistent development and production environments
+  - Easy onboarding for new developers
+  - Isolated service dependencies
+  - Simple deployment workflow
+  
+  **Commands:**
+  ```bash
+  docker compose up -d        # Start all services
+  docker compose logs -f      # View logs
+  docker compose down         # Stop services
+  ```
+</Card>
+
+### Database Administration
+
+**Adminer** - Web-based database management:
+- Accessible at `http://localhost:8080`
+- Full SQL query interface
+- Table browsing and editing
+- Import/export functionality
+
+### Environment Configuration
+
+**python-dotenv** - Environment variable management:
+
+```bash
+# .env file
+DATABASE_URL=postgresql://user:pass@db:5432/smarteatai
+SECRET_KEY=your-secret-key-here
+OLLAMA_BASE_URL=http://ollama:11434
+OLLAMA_MODEL=llama3.1
+```
+
+## Development Tools
+
+### Code Quality
+
+| Tool | Purpose | Configuration |
+|------|---------|---------------|
+| **ESLint** | JavaScript/TypeScript linting | `eslint.config.mjs` |
+| **TypeScript Compiler** | Type checking | `tsconfig.json` (strict mode) |
+| **Python Type Hints** | Static type checking | Throughout backend code |
+
+### API Documentation
+
+**Automatic API Docs** generated by FastAPI:
+- **Swagger UI**: Interactive API testing at `/docs`
+- **ReDoc**: Clean API reference at `/redoc`
+- **OpenAPI Schema**: JSON schema at `/openapi.json`
+
+Example endpoint documentation:
+```python
+@router.post("/plans", response_model=PlanResponse)
+async def create_plan(
+    plan_data: PlanCreate,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Create a new meal plan for the authenticated user.
+    
+    - **plan_data**: Plan configuration (start date, preferences)
+    - **returns**: Created plan with daily menus and recipes
+    """
+    return await PlanService.generate_plan(current_user.id, plan_data)
+```
+
+## Production Deployment
+
+### Hosting Platforms
+
+The application is designed for deployment on various platforms:
+
+<CardGroup cols={2}>
+  <Card title="Vercel" icon="triangle" color="#000000">
+    **Frontend Hosting**
+    
+    Next.js frontend deployed on Vercel:
+    - Automatic deployments from Git
+    - Edge network CDN
+    - Serverless functions
+    - Preview deployments
+    
+    [Live App →](https://smart-eat-ai.vercel.app/)
+  </Card>
+  
+  <Card title="Container Platforms" icon="server" color="#0ea5e9">
+    **Backend Hosting**
+    
+    FastAPI backend deployable to:
+    - Railway
+    - Render
+    - AWS ECS
+    - Google Cloud Run
+    - Self-hosted VPS
+  </Card>
+</CardGroup>
+
+### Database Hosting
+
+PostgreSQL can be hosted on:
+- **Supabase** (managed PostgreSQL with REST API)
+- **Neon** (serverless PostgreSQL)
+- **Railway** (container-based PostgreSQL)
+- **AWS RDS** (managed database service)
+
+## Technology Selection Rationale
+
+### Why Next.js?
+
+- **SSR/SSG**: Improved SEO and initial load performance
+- **API Routes**: Backend-for-frontend pattern
+- **File-based Routing**: Intuitive project structure
+- **Built-in Optimization**: Image, font, and script optimization
+- **Large Ecosystem**: Rich plugin and component ecosystem
+
+### Why FastAPI?
+
+- **Performance**: Comparable to Node.js and Go
+- **Modern Python**: Async/await, type hints, decorators
+- **Auto Documentation**: Swagger UI without extra work
+- **Type Safety**: Pydantic integration catches errors early
+- **WebSocket Support**: Real-time chat capabilities
+
+### Why PostgreSQL?
+
+- **ACID Compliance**: Data integrity guarantees
+- **Rich Data Types**: JSONB for flexible schemas
+- **Full-Text Search**: Built-in search capabilities
+- **Proven Reliability**: Battle-tested in production
+- **Strong Ecosystem**: ORMs, tools, and extensions
+
+### Why Ollama?
+
+- **Privacy**: No data sent to external APIs
+- **Cost**: No per-token charges
+- **Low Latency**: Local inference eliminates network delays
+- **Customizable**: Full control over models and parameters
+- **GPU Support**: Efficient use of available hardware
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Architecture Overview" icon="sitemap" href="/development/architecture">
+    Learn how these technologies work together
+  </Card>
+  
+  <Card title="Getting Started" icon="rocket" href="/quickstart">
+    Set up your development environment
+  </Card>
+</CardGroup>

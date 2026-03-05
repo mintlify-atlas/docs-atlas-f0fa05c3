@@ -1,0 +1,217 @@
+---
+title: 'Register'
+description: 'Register a new user account'
+api: 'POST /auth/register'
+---
+
+Register a new user account and receive an access token for immediate authentication.
+
+## Endpoint
+
+```http
+POST /auth/register
+```
+
+## Request Body
+
+<ParamField body="name" type="string" required>
+  The user's full name. Must be between 1 and 100 characters.
+  
+  **Example:** `"John Doe"`
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  The user's email address. Must be a valid email format and unique. Maximum 255 characters.
+  
+  **Example:** `"john.doe@example.com"`
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  The user's password. Must meet the following requirements:
+  - At least 8 characters long
+  - Contains at least one uppercase letter
+  - Contains at least one lowercase letter
+  - Contains at least one number
+  
+  **Example:** `"SecurePass123"`
+</ParamField>
+
+## Response
+
+<ResponseField name="access_token" type="string">
+  JWT access token for authentication. Include this in the `Authorization` header for subsequent requests.
+  
+  **Example:** `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MTcwOTU1MTIwMH0.abc123"`
+</ResponseField>
+
+<ResponseField name="token_type" type="string">
+  The type of token. Always returns `"bearer"`.
+</ResponseField>
+
+<ResponseField name="user" type="object">
+  The created user object.
+  
+  <Expandable title="user properties">
+    <ResponseField name="id" type="integer">
+      Unique identifier for the user.
+      
+      **Example:** `1`
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+      The user's full name.
+      
+      **Example:** `"John Doe"`
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+      The user's email address.
+      
+      **Example:** `"john.doe@example.com"`
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example Request
+
+```bash cURL
+curl -X POST "https://api.smarteat.ai/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "password": "SecurePass123"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.smarteat.ai/auth/register', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    password: 'SecurePass123'
+  })
+});
+
+const data = await response.json();
+console.log(data.access_token);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.smarteat.ai/auth/register',
+    json={
+        'name': 'John Doe',
+        'email': 'john.doe@example.com',
+        'password': 'SecurePass123'
+    }
+)
+
+data = response.json()
+print(data['access_token'])
+```
+
+## Example Response
+
+```json 201 Created
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MTcwOTU1MTIwMH0.abc123def456",
+  "token_type": "bearer",
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john.doe@example.com"
+  }
+}
+```
+
+## Error Responses
+
+```json 400 Bad Request - Email Already Registered
+{
+  "detail": "Email already registered"
+}
+```
+
+```json 422 Unprocessable Entity - Invalid Password
+{
+  "detail": [
+    {
+      "type": "value_error",
+      "loc": ["body", "password"],
+      "msg": "Value error, Password must be at least 8 characters long",
+      "input": "short"
+    }
+  ]
+}
+```
+
+```json 422 Unprocessable Entity - Password Missing Uppercase
+{
+  "detail": [
+    {
+      "type": "value_error",
+      "loc": ["body", "password"],
+      "msg": "Value error, Password must contain at least one uppercase letter",
+      "input": "lowercase123"
+    }
+  ]
+}
+```
+
+```json 422 Unprocessable Entity - Password Missing Number
+{
+  "detail": [
+    {
+      "type": "value_error",
+      "loc": ["body", "password"],
+      "msg": "Value error, Password must contain at least one number",
+      "input": "PasswordOnly"
+    }
+  ]
+}
+```
+
+```json 422 Unprocessable Entity - Invalid Email
+{
+  "detail": [
+    {
+      "type": "value_error",
+      "loc": ["body", "email"],
+      "msg": "value is not a valid email address",
+      "input": "not-an-email"
+    }
+  ]
+}
+```
+
+```json 500 Internal Server Error
+{
+  "detail": "Error creating user"
+}
+```
+
+## Password Requirements
+
+<Warning>
+  Passwords must meet all of the following requirements:
+</Warning>
+
+- Minimum 8 characters
+- At least one uppercase letter (A-Z)
+- At least one lowercase letter (a-z)
+- At least one number (0-9)
+
+## Notes
+
+- Email addresses are automatically converted to lowercase and trimmed
+- Each email can only be registered once
+- Upon successful registration, the user is automatically logged in (access token is returned)
+- The password is securely hashed using bcrypt before storage
+- Store the returned access token securely for subsequent API requests

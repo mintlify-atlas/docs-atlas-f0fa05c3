@@ -1,0 +1,219 @@
+---
+title: "Update Meal Detail"
+api: "PUT /meal-detail/{meal_detail_id}"
+description: "Update the recipe associated with a specific meal detail"
+---
+
+## Authentication
+
+This endpoint does not require authentication based on the source code.
+
+## Path Parameters
+
+<ParamField path="meal_detail_id" type="integer" required>
+  The unique identifier of the meal detail to update
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="recipe_id" type="integer" required>
+  The new recipe ID to assign to this meal detail
+</ParamField>
+
+## Request Example
+
+```bash
+curl -X PUT "https://api.smarteat.ai/meal-detail/123?recipe_id=45678" \
+  -H "Content-Type: application/json"
+```
+
+## Response
+
+<ResponseField name="id" type="integer" required>
+  ID of the meal detail
+</ResponseField>
+
+<ResponseField name="recipe_id" type="integer" required>
+  Recipe ID associated with the meal detail (updated value)
+</ResponseField>
+
+<ResponseField name="schedule" type="integer" required>
+  Order of meals (1-6)
+</ResponseField>
+
+<ResponseField name="status" type="integer" required>
+  Status of the meal detail (0: pending, 1: completed)
+</ResponseField>
+
+<ResponseField name="meal_type" type="string" required>
+  Type of meal. Possible values: `breakfast`, `lunch`, `dinner`, `snack`
+</ResponseField>
+
+<ResponseField name="recipe" type="object" required>
+  Associated recipe details
+  
+  <ResponseField name="id" type="integer" required>
+    Unique identifier for the recipe
+  </ResponseField>
+  
+  <ResponseField name="name" type="string" required>
+    Name of the recipe
+  </ResponseField>
+  
+  <ResponseField name="calories" type="integer" required>
+    Calorie content (minimum: 0)
+  </ResponseField>
+  
+  <ResponseField name="protein" type="integer" required>
+    Protein content in grams (minimum: 0)
+  </ResponseField>
+  
+  <ResponseField name="carbs" type="integer" required>
+    Carbohydrate content in grams (minimum: 0)
+  </ResponseField>
+  
+  <ResponseField name="fat" type="integer" required>
+    Fat content in grams (minimum: 0)
+  </ResponseField>
+  
+  <ResponseField name="image_url" type="string">
+    URL to the recipe image
+  </ResponseField>
+  
+  <ResponseField name="recipe_url" type="string">
+    URL to the full recipe details
+  </ResponseField>
+  
+  <ResponseField name="recipe_id" type="integer" required>
+    External recipe identifier
+  </ResponseField>
+  
+  <ResponseField name="ingredients" type="string" required>
+    Comma-separated list of ingredients
+  </ResponseField>
+  
+  <ResponseField name="meal_types" type="array" required>
+    List of applicable meal types
+    
+    <ResponseField name="id" type="integer" required>
+      Category ID
+    </ResponseField>
+    
+    <ResponseField name="name" type="string" required>
+      Category name
+    </ResponseField>
+  </ResponseField>
+  
+  <ResponseField name="diet_types" type="array" required>
+    List of applicable diet types
+    
+    <ResponseField name="id" type="integer" required>
+      Category ID
+    </ResponseField>
+    
+    <ResponseField name="name" type="string" required>
+      Category name
+    </ResponseField>
+  </ResponseField>
+</ResponseField>
+
+## Response Example
+
+```json
+{
+  "id": 123,
+  "recipe_id": 45678,
+  "schedule": 2,
+  "status": 0,
+  "meal_type": "lunch",
+  "recipe": {
+    "id": 45678,
+    "name": "Grilled Chicken Salad",
+    "calories": 350,
+    "protein": 35,
+    "carbs": 25,
+    "fat": 10,
+    "image_url": "https://example.com/grilled-chicken.jpg",
+    "recipe_url": "https://example.com/recipe/grilled-chicken",
+    "recipe_id": 45678,
+    "ingredients": "Chicken breast, mixed greens, cherry tomatoes, olive oil, lemon",
+    "meal_types": [
+      {
+        "id": 2,
+        "name": "lunch"
+      },
+      {
+        "id": 3,
+        "name": "dinner"
+      }
+    ],
+    "diet_types": [
+      {
+        "id": 1,
+        "name": "high_protein"
+      },
+      {
+        "id": 2,
+        "name": "low_carb"
+      }
+    ]
+  }
+}
+```
+
+## Additional Endpoint: Update Meal Status
+
+You can also update just the status of a meal detail using a different endpoint:
+
+**API:** `PUT /meal-detail/{meal_detail_id}/status`
+
+### Query Parameters
+
+<ParamField query="status" type="integer" required>
+  The new status value (0: pending, 1: completed)
+</ParamField>
+
+### Request Example
+
+```bash
+curl -X PUT "https://api.smarteat.ai/meal-detail/123/status?status=1" \
+  -H "Content-Type: application/json"
+```
+
+## Error Responses
+
+<ResponseField name="404 Not Found">
+  Meal detail with the specified ID not found
+  
+  ```json
+  {
+    "detail": "Meal detail not found"
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="422 Unprocessable Entity">
+  Invalid query parameters
+  
+  ```json
+  {
+    "detail": [
+      {
+        "loc": ["query", "recipe_id"],
+        "msg": "field required",
+        "type": "value_error.missing"
+      }
+    ]
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="500 Internal Server Error">
+  An unexpected error occurred on the server
+  
+  ```json
+  {
+    "detail": "Internal server error"
+  }
+  ```
+</ResponseField>

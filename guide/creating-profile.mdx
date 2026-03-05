@@ -1,0 +1,158 @@
+---
+title: Creating Your Profile
+description: Step-by-step guide to creating and configuring your SmartEat AI profile
+---
+
+Your profile is the foundation of your personalized nutrition experience. SmartEat AI uses your profile information to calculate your daily calorie and macro targets, then generates customized meal plans that match your goals and preferences.
+
+## What You'll Need
+
+Before creating your profile, gather the following information:
+
+- **Personal measurements**: Height (cm) and weight (kg)
+- **Birth date**: Must be between 16 and 100 years old
+- **Body type**: Lean, normal, stocky, or obese
+- **Gender**: Male or female
+- **Activity level**: Low, medium, or high
+- **Fitness goal**: Lose weight, maintain weight, or gain weight
+- **Meal preferences**: Number of meals per day (1-6)
+- **Dietary preferences**: Food tastes, restrictions, and diet types
+
+<Note>
+All measurements should be current and accurate to ensure the best meal plan recommendations.
+</Note>
+
+## Creating Your Profile
+
+<Steps>
+
+### Enter Basic Information
+
+Provide your personal measurements and demographics:
+
+- **Height**: Between 140-220 cm
+- **Weight**: Between 35-300 kg
+- **Birth Date**: You must be at least 16 years old
+- **Gender**: Male or female
+- **Body Type**: Select the option that best describes your current physique
+
+<Tip>
+Be honest about your body type. SmartEat AI uses this to estimate your body fat percentage and calculate accurate macro targets.
+</Tip>
+
+### Define Your Goals
+
+Choose your fitness objective:
+
+- **Lose Weight**: The system will set calories at 80% of your TDEE (Total Daily Energy Expenditure) with higher protein to preserve muscle mass
+- **Maintain Weight**: Calories match your TDEE for weight stability
+- **Gain Weight**: Calories are set at 110% of TDEE plus 150 kcal to support muscle growth
+
+### Set Activity Level
+
+Select your typical daily activity:
+
+- **Low (1.2x)**: Sedentary lifestyle, little to no exercise
+- **Medium (1.55x)**: Moderate exercise 3-5 days per week
+- **High (1.725x)**: Intense exercise 6-7 days per week
+
+<Warning>
+Be realistic about your activity level. Overestimating can lead to excessive calorie targets that hinder your goals.
+</Warning>
+
+### Configure Meal Preferences
+
+Choose how many meals you want per day (1-6):
+
+- **3 meals**: Traditional breakfast, lunch, and dinner
+- **4 meals**: Adds one snack between main meals
+- **5 meals**: Adds two snacks throughout the day
+- **6 meals**: Maximum frequency for consistent energy and metabolism
+
+The system automatically distributes your daily calories across your chosen number of meals.
+
+### Add Dietary Preferences
+
+#### Food Tastes
+
+Select ingredients and cuisines you enjoy. The AI will prioritize recipes featuring these preferences.
+
+#### Dietary Restrictions
+
+Specify any allergies, intolerances, or foods you avoid:
+
+- Allergies (nuts, shellfish, dairy, etc.)
+- Religious or ethical restrictions
+- Personal dislikes
+
+<Note>
+The AI uses advanced filtering to ensure all recommended recipes comply with your restrictions.
+</Note>
+
+#### Diet Types
+
+Choose dietary styles that align with your goals:
+
+- **High Protein**: Emphasizes protein-rich foods
+- **Low Carb**: Reduces carbohydrate intake
+- **Vegan**: Plant-based, no animal products
+- **Vegetarian**: No meat, may include dairy and eggs
+- **Low Calorie**: Focuses on lower-calorie options
+- **High Fiber**: Prioritizes fiber-rich foods
+- **High Carb**: Emphasizes carbohydrate sources
+
+You can select multiple diet types that work together.
+
+### Review Calculated Targets
+
+After submitting your profile, SmartEat AI automatically calculates:
+
+- **Daily Calorie Target**: Based on your BMR (Basal Metabolic Rate) using the Mifflin-St Jeor equation
+- **Protein Target**: Adjusted based on your lean body mass and goals (2.0-2.2g per kg of lean mass)
+- **Fat Target**: Set at 25% of total calories
+- **Carbohydrate Target**: Fills remaining calories after protein and fat
+- **Body Fat Percentage**: Estimated from gender and body type
+
+</Steps>
+
+## What Happens Next
+
+Once your profile is saved:
+
+1. **Macro calculations complete**: Your personalized nutrition targets are stored
+2. **Recipe database filtered**: The system identifies compatible recipes based on your preferences and restrictions
+3. **Ready for meal planning**: You can now generate your first weekly meal plan
+
+<Tip>
+You can update your profile anytime as your goals, measurements, or preferences change. The system will recalculate your targets automatically.
+</Tip>
+
+## API Endpoint
+
+For developers, the profile is managed via:
+
+```
+PUT /api/profile
+```
+
+This endpoint supports both creating new profiles and updating existing ones (upsert operation).
+
+## Tips for Success
+
+- **Update regularly**: Recalculate targets as you lose or gain weight
+- **Be specific with restrictions**: The more detailed your restrictions, the better the AI can filter recipes
+- **Start conservative**: Begin with fewer meals per day if you're new to structured eating
+- **Choose realistic goals**: Sustainable progress is better than aggressive targets
+- **Adjust activity level seasonally**: Your activity may change throughout the year
+
+## Common Validation Rules
+
+- Age must be 16-100 years
+- Height must be 140-220 cm
+- Weight must be 35-300 kg
+- Meals per day must be 1-6
+- All fields marked as required must be completed
+
+<Note>
+If you encounter validation errors, double-check that all your measurements fall within the acceptable ranges.
+</Note>

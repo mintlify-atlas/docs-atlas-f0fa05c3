@@ -1,0 +1,177 @@
+---
+title: 'Dashboard'
+description: 'Track your daily meals and monitor your nutritional progress in real-time'
+icon: 'chart-line'
+---
+
+## Overview
+
+The Dashboard is your daily nutrition command center, providing an at-a-glance view of today's meal plan and your progress toward nutritional goals. It helps you stay accountable by tracking which meals you've consumed and automatically updating your macronutrient intake.
+
+<img
+  className="block"
+  src="https://github.com/user-attachments/assets/c63ddd5e-d91b-4abf-b190-25eb4ea4355b"
+  alt="SmartEat AI Dashboard"
+/>
+
+## What It Does
+
+The Dashboard serves as your daily checkpoint for nutrition management:
+
+- **Daily Meal Overview**: Displays all meals scheduled for today from your weekly nutrition plan
+- **Real-Time Tracking**: Shows which meals you've consumed and which are still pending
+- **Automatic Macro Calculation**: Updates your nutritional metrics as you mark meals as consumed
+- **Goal Progress Monitoring**: Compares your current intake against your personalized targets
+
+## Key Capabilities
+
+<CardGroup cols={2}>
+  <Card title="Meal Status Tracking" icon="check-circle">
+    Mark meals as consumed with a single click. The system automatically recalculates your daily nutritional totals.
+  </Card>
+  
+  <Card title="Macronutrient Cards" icon="chart-pie">
+    Visual progress indicators for calories, protein, carbohydrates, and fats showing current vs. goal values.
+  </Card>
+  
+  <Card title="Smart Day Detection" icon="calendar">
+    Automatically displays meals for the current day, adjusting based on your timezone.
+  </Card>
+  
+  <Card title="Personalized Greetings" icon="user">
+    Welcome message with your name for a personalized experience.
+  </Card>
+</CardGroup>
+
+## How to Use the Dashboard
+
+<Steps>
+  <Step title="View Today's Meals">
+    When you open the Dashboard, you'll see all meals planned for today with their nutritional information.
+    
+    Each meal card displays:
+    - Recipe name and image
+    - Calories, protein, carbs, and fat content
+    - Consumption status
+  </Step>
+  
+  <Step title="Mark Meals as Consumed">
+    After eating a meal, click the **"Mark as consumed"** button on that meal card.
+    
+    The button will change to show a checkmark and "Consumed" status.
+    
+    <Note>
+      Your macronutrient totals update instantly when you mark a meal as consumed.
+    </Note>
+  </Step>
+  
+  <Step title="Monitor Your Progress">
+    Check the macronutrient cards at the top of the Dashboard to see:
+    - How many calories you've consumed vs. your daily goal
+    - Your protein, carb, and fat intake progress
+    - Visual progress bars for each macro
+  </Step>
+  
+  <Step title="Adjust If Needed">
+    If you accidentally mark a meal as consumed, click the "Consumed" button again to toggle it back to pending status.
+  </Step>
+</Steps>
+
+## UI Components
+
+### Macronutrient Cards
+
+The top section displays four cards showing your daily nutritional targets:
+
+- **Calories**: Total energy intake in kcal
+- **Proteins**: Muscle-building macros in grams
+- **Carbohydrates**: Energy source in grams
+- **Fats**: Essential fats in grams
+
+Each card shows:
+- Current intake (from consumed meals)
+- Daily goal (based on your profile)
+- Progress indicator
+
+### Meal Cards
+
+Each meal is presented in an easy-to-read card format:
+
+<Tabs>
+  <Tab title="Pending Meal">
+    - Recipe image thumbnail
+    - Recipe name
+    - Nutritional breakdown
+    - "Mark as consumed" button (gray)
+  </Tab>
+  
+  <Tab title="Consumed Meal">
+    - Same information as pending
+    - "Consumed" button (highlighted with checkmark)
+    - Indicates meal has been tracked
+  </Tab>
+</Tabs>
+
+## Use Cases
+
+<AccordionGroup>
+  <Accordion title="Morning Routine Check-In">
+    Start your day by reviewing the Dashboard to see what meals are planned. This helps you mentally prepare and ensures you have ingredients ready.
+  </Accordion>
+  
+  <Accordion title="Post-Meal Tracking">
+    After each meal, open the Dashboard and mark it as consumed. This builds accountability and helps you stay aware of your nutritional intake throughout the day.
+  </Accordion>
+  
+  <Accordion title="Mid-Day Progress Review">
+    Check in during lunch or afternoon to see how much of your daily nutrition goals you've achieved and what's remaining.
+  </Accordion>
+  
+  <Accordion title="End-of-Day Reflection">
+    Review your Dashboard at night to see if you met your goals. This data helps you understand your eating patterns over time.
+  </Accordion>
+  
+  <Accordion title="Adjusting Meal Consumption">
+    If you skip a meal or eat something different, you can leave it unmarked or toggle the status to accurately reflect your actual intake.
+  </Accordion>
+</AccordionGroup>
+
+## Dashboard States
+
+<Warning>
+  **No Active Plan**: If you haven't generated a nutrition plan yet, the Dashboard will display a prompt to create one through the AI Chat feature.
+</Warning>
+
+<Info>
+  **Loading State**: When first accessing the Dashboard, you'll see a loading indicator while your plan data is retrieved.
+</Info>
+
+<Check>
+  **Active Plan**: Once you have an active weekly plan, the Dashboard automatically shows today's meals and updates in real-time.
+</Check>
+
+## Tips for Best Results
+
+<Tip>
+  **Track Consistently**: Mark meals as consumed as soon as you finish eating for the most accurate tracking.
+</Tip>
+
+<Tip>
+  **Review Daily**: Make it a habit to check your Dashboard at least twice a day - morning and evening.
+</Tip>
+
+<Tip>
+  **Use Visual Cues**: The color-coded progress bars help you quickly identify which macros you're on track with.
+</Tip>
+
+## Related Features
+
+- **[My Plan](/features/meal-planning)**: View and manage your complete weekly nutrition plan
+- **[AI Chat](/features/ai-chat)**: Generate new plans or modify existing ones
+- **[Profile Setup](/features/profile-setup)**: Adjust your nutritional targets and goals
+
+---
+
+<Card title="Need Help?" icon="question-circle" href="https://github.com/SmartEatAI/smart-eat-ai">
+  Visit our GitHub repository for troubleshooting and FAQs about the Dashboard.
+</Card>

@@ -1,0 +1,436 @@
+---
+title: 'Docker Setup'
+description: 'Run SmartEat AI with Docker Compose for easy development and deployment'
+---
+
+## Prerequisites
+
+Ensure you have the following installed:
+
+- **Docker** 20.10+ - Container runtime
+- **Docker Compose** 2.0+ - Multi-container orchestration
+- **(Optional) NVIDIA Docker Runtime** - For GPU acceleration with Ollama
+
+<Note>
+  Docker provides a consistent development environment and simplifies dependency management. All services run in isolated containers.
+</Note>
+
+## Quick Start
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/SmartEatAI/smart-eat-ai.git
+    cd smart-eat-ai
+    ```
+  </Step>
+
+  <Step title="Configure environment">
+    Copy the example environment file:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+    The default values work for Docker, but you can customize as needed.
+  </Step>
+
+  <Step title="Build containers">
+    Build all Docker images:
+
+    ```bash
+    docker compose build
+    ```
+
+    This builds the backend and frontend images from their respective Dockerfiles.
+  </Step>
+
+  <Step title="Start services">
+    Launch all containers:
+
+    ```bash
+    docker compose up
+    ```
+
+    Add `-d` flag to run in detached mode (background):
+    ```bash
+    docker compose up -d
+    ```
+  </Step>
+</Steps>
+
+## Service Overview
+
+SmartEat AI runs five Docker services:
+
+<ParamField path="backend" type="FastAPI Application">
+  **Container**: `smarteatai_backend`
+  
+  **Port**: 8000
+  
+  **Purpose**: REST API providing authentication, user management, meal plans, and AI recommendations
+  
+  **Access**: http://localhost:8000
+  
+  **Docs**: http://localhost:8000/docs
+</ParamField>
+
+<ParamField path="frontend" type="Next.js Application">
+  **Container**: `smarteatai_frontend`
+  
+  **Port**: 3000
+  
+  **Purpose**: User interface for SmartEat AI platform
+  
+  **Access**: http://localhost:3000
+  
+  **Features**: Dashboard, chat, profile management, meal planning
+</ParamField>
+
+<ParamField path="db" type="PostgreSQL Database">
+  **Container**: `smarteatai_db`
+  
+  **Port**: 5432
+  
+  **Image**: postgres:15
+  
+  **Purpose**: Primary database storing users, recipes, profiles, and meal plans
+  
+  **Credentials**: Configured via environment variables
+  
+  **Volume**: `postgres_data` (persists data)
+</ParamField>
+
+<ParamField path="ollama" type="LLM Server">
+  **Container**: `smarteatai_ollama`
+  
+  **Port**: 11434
+  
+  **Image**: ollama/ollama:latest
+  
+  **Purpose**: Local LLM server for AI chat and embeddings
+  
+  **Model**: llama3.1 (configurable via `OLLAMA_MODEL`)
+  
+  **Volume**: `ollama_data` (persists models)
+  
+  **GPU**: Automatically uses NVIDIA GPU if available
+</ParamField>
+
+<ParamField path="adminer" type="Database Admin">
+  **Container**: `smarteatai_adminer`
+  
+  **Port**: 8080
+  
+  **Image**: adminer
+  
+  **Purpose**: Web-based database management interface
+  
+  **Access**: http://localhost:8080
+  
+  **Server**: db (PostgreSQL service name)
+</ParamField>
+
+## Accessing Services
+
+### Frontend Application
+
+Open http://localhost:3000 in your browser to access the SmartEat AI web interface.
+
+### Backend API
+
+- **Base URL**: http://localhost:8000
+- **Health Check**: http://localhost:8000/health
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+
+<CodeGroup>
+```bash Test API
+curl http://localhost:8000/health
+```
+
+```json Response
+{
+  "status": "healthy",
+  "database": "connected"
+}
+```
+</CodeGroup>
+
+### Database Management
+
+Access Adminer at http://localhost:8080 with these credentials:
+
+| Field | Value |
+|-------|-------|
+| System | PostgreSQL |
+| Server | db |
+| Username | smarteatai |
+| Password | smarteatai |
+| Database | smarteatai |
+
+<Note>
+  These are default development credentials. Change them in production!
+</Note>
+
+### Ollama LLM Service
+
+Ollama runs on http://localhost:11434. Download the required model:
+
+```bash
+# Access the Ollama container
+docker exec -it smarteatai_ollama bash
+
+# Pull the model (llama3.1 by default)
+ollama pull llama3.1
+
+# Verify installation
+ollama list
+```
+
+## Docker Compose Commands
+
+<CodeGroup>
+```bash Start Services
+# Start all services
+docker compose up
+
+# Start in background
+docker compose up -d
+
+# Start specific service
+docker compose up backend
+```
+
+```bash Stop Services
+# Stop all services
+docker compose down
+
+# Stop and remove volumes
+docker compose down -v
+```
+
+```bash View Logs
+# All services
+docker compose logs
+
+# Specific service
+docker compose logs backend
+
+# Follow logs
+docker compose logs -f
+```
+
+```bash Rebuild
+# Rebuild specific service
+docker compose build backend
+
+# Rebuild all services
+docker compose build
+
+# Rebuild without cache
+docker compose build --no-cache
+```
+</CodeGroup>
+
+## Container Management
+
+### Execute Commands in Containers
+
+<CodeGroup>
+```bash Backend Commands
+# Access backend shell
+docker exec -it smarteatai_backend bash
+
+# Run migrations
+docker exec smarteatai_backend alembic upgrade head
+
+# Seed database
+docker exec smarteatai_backend python -m app.seeders.run_seed
+```
+
+```bash Frontend Commands
+# Access frontend shell
+docker exec -it smarteatai_frontend bash
+
+# Install new package
+docker exec smarteatai_frontend npm install <package>
+```
+
+```bash Database Commands
+# Access PostgreSQL
+docker exec -it smarteatai_db psql -U smarteatai -d smarteatai
+
+# Backup database
+docker exec smarteatai_db pg_dump -U smarteatai smarteatai > backup.sql
+```
+</CodeGroup>
+
+## GPU Acceleration (Optional)
+
+If you have an NVIDIA GPU, Ollama will automatically use it for faster inference.
+
+### Requirements
+
+1. **NVIDIA GPU** with CUDA support
+2. **NVIDIA Docker Runtime** installed
+
+### Install NVIDIA Container Toolkit
+
+```bash
+# Ubuntu/Debian
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+sudo systemctl restart docker
+```
+
+### Disable GPU (CPU-only)
+
+If you don't have a GPU or want to use CPU only, comment out the `deploy` section in `docker-compose.yml`:
+
+```yaml
+ollama:
+  image: ollama/ollama:latest
+  # ... other config ...
+  # deploy:
+  #   resources:
+  #     reservations:
+  #       devices:
+  #         - driver: nvidia
+  #           count: all
+  #           capabilities: [ gpu ]
+```
+
+## Volumes and Data Persistence
+
+Docker volumes persist data between container restarts:
+
+| Volume | Purpose | Data |
+|--------|---------|------|
+| `postgres_data` | Database storage | Users, recipes, plans |
+| `ollama_data` | LLM models | Downloaded Ollama models |
+
+### Managing Volumes
+
+<CodeGroup>
+```bash List Volumes
+docker volume ls
+```
+
+```bash Inspect Volume
+docker volume inspect smart-eat-ai_postgres_data
+```
+
+```bash Remove Volume
+# WARNING: This deletes all data!
+docker volume rm smart-eat-ai_postgres_data
+```
+</CodeGroup>
+
+## Development Workflow
+
+### Hot Reload
+
+Both backend and frontend support hot reload:
+
+- **Backend**: FastAPI auto-reloads on file changes in `backend/app/`
+- **Frontend**: Next.js hot-reloads on file changes in `frontend/`
+
+### Making Code Changes
+
+1. Edit files in `backend/` or `frontend/` directories
+2. Changes are automatically synced to containers via volume mounts
+3. Services reload automatically
+4. Refresh your browser to see changes
+
+<Note>
+  If you modify `requirements.txt` or `package.json`, rebuild the containers:
+  ```bash
+  docker compose build backend
+  docker compose up -d backend
+  ```
+</Note>
+
+## Troubleshooting
+
+### Port Already in Use
+
+```bash
+# Find process using port
+lsof -ti:8000 | xargs kill -9
+
+# Or change port in docker-compose.yml
+ports:
+  - "8001:8000"  # External:Internal
+```
+
+### Container Won't Start
+
+```bash
+# Check logs
+docker compose logs backend
+
+# Restart specific service
+docker compose restart backend
+
+# Rebuild and restart
+docker compose up -d --build backend
+```
+
+### Database Connection Issues
+
+```bash
+# Verify database is running
+docker compose ps db
+
+# Check database logs
+docker compose logs db
+
+# Recreate database
+docker compose down
+docker volume rm smart-eat-ai_postgres_data
+docker compose up -d
+```
+
+### Ollama Model Issues
+
+```bash
+# Check if model is downloaded
+docker exec smarteatai_ollama ollama list
+
+# Pull model manually
+docker exec smarteatai_ollama ollama pull llama3.1
+
+# Check Ollama logs
+docker compose logs ollama
+```
+
+### Clean Start
+
+Reset everything:
+
+```bash
+# Stop all containers
+docker compose down
+
+# Remove volumes (WARNING: Deletes all data!)
+docker compose down -v
+
+# Remove images
+docker compose down --rmi all
+
+# Rebuild from scratch
+docker compose build --no-cache
+docker compose up -d
+```
+
+## Next Steps
+
+- Review [Environment Variables](/development/environment-variables) for configuration options
+- Check the [Installation](/development/installation) guide for local development without Docker
+- Explore the API documentation at http://localhost:8000/docs

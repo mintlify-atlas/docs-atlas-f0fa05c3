@@ -1,0 +1,489 @@
+---
+title: 'Ollama Setup'
+description: 'Configure Ollama LLM for local AI inference with GPU support'
+---
+
+## Overview
+
+SmartEat AI uses **Ollama** to run large language models (LLMs) locally, providing private, fast AI inference without external API dependencies. The system is optimized for environments with limited GPU memory (8GB VRAM).
+
+<Info>
+**Why Ollama?**
+- Privacy: All data stays on your infrastructure
+- Cost: No per-token API fees
+- Speed: Low-latency inference for real-time chat
+- Flexibility: Easy model switching and customization
+</Info>
+
+## Docker Configuration
+
+Ollama runs as a containerized service with GPU support.
+
+### docker-compose.yml
+
+```yaml
+ollama:
+  image: ollama/ollama:latest
+  container_name: smarteatai_ollama
+  ports:
+    - "11434:11434"
+  volumes:
+    - ollama_data:/root/.ollama
+  environment:
+    - OLLAMA_CONTEXT_LENGTH=32768  # Extended context window
+    - OLLAMA_NUM_PARALLEL=1         # Single request at a time
+    - OLLAMA_MAX_LOADED_MODELS=1    # Keep one model in memory
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+  entrypoint: /bin/bash
+  command: -c "ollama serve"
+```
+
+<Accordion title="Configuration Explanation">
+  - **Port 11434**: Ollama API endpoint
+  - **Volume**: Persists downloaded models across container restarts
+  - **OLLAMA_CONTEXT_LENGTH**: Maximum tokens for context (32K)
+  - **GPU Reservation**: Enables NVIDIA GPU acceleration
+  - **NUM_PARALLEL=1**: Prevents OOM with limited VRAM
+</Accordion>
+
+## Model Setup
+
+### Step 1: Start the Ollama Service
+
+```bash
+# Start all services including Ollama
+docker-compose up -d
+
+# Verify Ollama is running
+docker ps | grep ollama
+```
+
+### Step 2: Download the Model
+
+Access the Ollama container and pull the model:
+
+```bash
+# Enter the Ollama container
+docker exec -it smarteatai_ollama bash
+
+# Download Llama 3.1 (recommended)
+ollama pull llama3.1
+
+# Alternative models:
+# ollama pull llama3:latest     # Llama 3 (smaller, faster)
+# ollama pull mistral:latest    # Mistral 7B
+# ollama pull phi3:latest       # Phi-3 (very small, 3.8B)
+```
+
+<Tabs>
+  <Tab title="Llama 3.1 (Recommended)">
+    - **Size**: ~4.7GB
+    - **Parameters**: 8B
+    - **Context**: Up to 128K tokens
+    - **Best for**: Balanced performance and accuracy
+  </Tab>
+  
+  <Tab title="Llama 3">
+    - **Size**: ~4.7GB
+    - **Parameters**: 8B
+    - **Context**: 8K tokens
+    - **Best for**: Faster inference on limited hardware
+  </Tab>
+  
+  <Tab title="Phi-3">
+    - **Size**: ~2.3GB
+    - **Parameters**: 3.8B
+    - **Context**: 4K tokens
+    - **Best for**: Very limited VRAM (4GB)
+  </Tab>
+</Tabs>
+
+### Step 3: Verify Installation
+
+```bash
+# List downloaded models
+ollama list
+
+# Expected output:
+NAME              ID              SIZE    MODIFIED
+llama3.1:latest   42182419e950    4.7 GB  2 minutes ago
+
+# Test the model
+ollama run llama3.1 "Hello, what is your name?"
+```
+
+## Backend Integration
+
+### Environment Variables
+
+Add to your `.env` file (in project root):
+
+```bash
+# Ollama Configuration
+OLLAMA_MODEL=llama3.1:latest
+OLLAMA_BASE_URL=http://ollama:11434
+
+# Embeddings (for future vector search)
+CHROMA_EMBEDDING_MODEL=llama3.1:latest
+CHROMA_DB=/app/data/chroma_db_recipes
+```
+
+### LangChain Configuration
+
+**File**: `backend/app/core/config_ollama.py`
+
+```python
+from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain_chroma import Chroma
+from app.config import settings
+
+# Optimized for 8GB VRAM
+OLLAMA_CONFIG = {
+    "model": settings.OLLAMA_MODEL,              # llama3.1:latest
+    "base_url": settings.OLLAMA_BASE_URL,        # http://ollama:11434
+    "temperature": 0,                             # Deterministic output
+    "num_ctx": 16384,                             # Context window
+    "num_predict": 4096,                          # Max tokens to generate
+}
+
+llm = ChatOllama(**OLLAMA_CONFIG)
+
+# Embeddings for vector search (optional)
+embeddings = OllamaEmbeddings(
+    model=settings.CHROMA_EMBEDDING_MODEL,
+    base_url=settings.OLLAMA_BASE_URL
+)
+
+# Vector database (not currently active)
+vector_db = Chroma(
+    persist_directory=settings.CHROMA_DB,
+    embedding_function=embeddings
+)
+```
+
+<Note>
+**Vector Database**: ChromaDB integration exists but is not active. Direct PostgreSQL queries are used instead due to filtering limitations.
+</Note>
+
+## GPU Support
+
+### NVIDIA GPU Setup
+
+<Steps>
+  <Step title="Install NVIDIA Drivers">
+    Ensure you have NVIDIA drivers installed on your host:
+    
+    ```bash
+    nvidia-smi
+    ```
+    
+    Should display GPU information.
+  </Step>
+
+  <Step title="Install NVIDIA Container Toolkit">
+    ```bash
+    # Ubuntu/Debian
+    distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+    curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+    curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
+      sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+    
+    sudo apt-get update
+    sudo apt-get install -y nvidia-container-toolkit
+    sudo systemctl restart docker
+    ```
+  </Step>
+
+  <Step title="Verify GPU in Container">
+    ```bash
+    docker exec -it smarteatai_ollama nvidia-smi
+    ```
+    
+    Should show GPU details from inside the container.
+  </Step>
+</Steps>
+
+### CPU-Only Mode
+
+If you don't have a GPU, modify `docker-compose.yml`:
+
+```yaml
+ollama:
+  image: ollama/ollama:latest
+  # Remove the deploy section:
+  # deploy:
+  #   resources:
+  #     reservations:
+  #       devices:
+  #         - driver: nvidia
+  #           count: all
+  #           capabilities: [gpu]
+```
+
+<Warning>
+**Performance Impact**: CPU inference is 10-50x slower than GPU. Expect 2-10 seconds per response instead of 200-500ms.
+</Warning>
+
+## Performance Tuning
+
+### Context Window Optimization
+
+The system uses a multi-layered approach to manage context:
+
+<CardGroup cols={3}>
+  <Card title="Ollama Level" icon="1">
+    `OLLAMA_CONTEXT_LENGTH=32768`
+    
+    Maximum supported by the service
+  </Card>
+  <Card title="Model Level" icon="2">
+    `num_ctx=16384`
+    
+    Actual context used per request
+  </Card>
+  <Card title="Agent Level" icon="3">
+    `MAX_CONTEXT_TOKENS=10000`
+    
+    Conversation history limit
+  </Card>
+</CardGroup>
+
+### Memory Management
+
+**8GB VRAM Configuration** (recommended):
+
+```python
+# config_ollama.py
+OLLAMA_CONFIG = {
+    "num_ctx": 16384,        # 16K context window
+    "num_predict": 4096,     # Max output tokens
+    "num_thread": 8,         # CPU threads for computation
+    "num_gpu": 1,            # Number of GPUs to use
+}
+```
+
+**4GB VRAM Configuration** (smaller model):
+
+```bash
+# Use Phi-3 instead of Llama 3.1
+OLLAMA_MODEL=phi3:latest
+```
+
+```python
+OLLAMA_CONFIG = {
+    "num_ctx": 4096,         # Reduced context
+    "num_predict": 1024,     # Reduced output
+}
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Error: Connection refused (port 11434)">
+    **Cause**: Ollama service is not running.
+    
+    **Solution**:
+    ```bash
+    docker-compose up -d ollama
+    docker logs smarteatai_ollama
+    ```
+  </Accordion>
+
+  <Accordion title="Error: Out of memory (OOM)">
+    **Cause**: Model is too large for available VRAM.
+    
+    **Solutions**:
+    1. Use a smaller model (Phi-3)
+    2. Reduce `num_ctx` in config
+    3. Set `OLLAMA_NUM_PARALLEL=1`
+    4. Close other GPU applications
+    
+    ```bash
+    # Check GPU memory usage
+    nvidia-smi
+    ```
+  </Accordion>
+
+  <Accordion title="Error: Model not found">
+    **Cause**: Model not downloaded or wrong name in `.env`.
+    
+    **Solution**:
+    ```bash
+    docker exec -it smarteatai_ollama ollama list
+    docker exec -it smarteatai_ollama ollama pull llama3.1
+    ```
+  </Accordion>
+
+  <Accordion title="Slow inference (>5 seconds per response)">
+    **Possible causes**:
+    - Running on CPU instead of GPU
+    - Context window too large
+    - Model loading overhead
+    
+    **Solutions**:
+    1. Verify GPU is being used:
+       ```bash
+       docker exec -it smarteatai_ollama nvidia-smi
+       ```
+    2. Reduce `num_ctx` to 8192 or 4096
+    3. Keep `OLLAMA_MAX_LOADED_MODELS=1` to avoid reloading
+  </Accordion>
+</AccordionGroup>
+
+## Usage in Agent
+
+The agent uses Ollama for two purposes:
+
+### 1. Conversational AI (Primary)
+
+```python
+from app.core.config_ollama import llm
+
+# The agent binds tools and invokes the model
+llm_with_tools = llm.bind_tools(nutrition_tools)
+response = llm_with_tools.invoke([
+    {"role": "system", "content": system_prompt},
+    {"role": "user", "content": "Generate a meal plan"}
+])
+```
+
+### 2. Dietary Validation (Secondary)
+
+Used in `generate_weekly_plan.py` to validate recipes against restrictions:
+
+```python
+from app.core.config_ollama import llm
+
+message = (
+    f"answer ONLY with YES or NO. "
+    f"I have dietary restrictions: [{restrictions_text}] "
+    f"Does this recipe comply: {recipe.name} "
+    f"Ingredients: [{recipe.ingredients}]"
+)
+
+response = llm.invoke(message)
+answer = response.content.strip().upper()  # "YES" or "NO"
+```
+
+## Monitoring
+
+### Real-time Metrics
+
+```bash
+# Watch GPU usage
+watch -n 1 nvidia-smi
+
+# Monitor Ollama logs
+docker logs -f smarteatai_ollama
+
+# Check model memory usage
+curl http://localhost:11434/api/ps
+```
+
+### Performance Benchmarks
+
+Typical performance on an 8GB GPU:
+
+| Operation | Latency |
+|-----------|--------|
+| Simple query | 200-500ms |
+| Tool call | 500-1000ms |
+| Complex reasoning | 1-2s |
+| Model loading | 3-5s (first request) |
+
+## Advanced Configuration
+
+### Custom Model Parameters
+
+Create a `Modelfile` for fine-tuned behavior:
+
+```dockerfile
+# Modelfile
+FROM llama3.1:latest
+
+# System message
+SYSTEM You are Smarty, a nutritionist assistant.
+
+# Parameters
+PARAMETER temperature 0
+PARAMETER num_ctx 16384
+PARAMETER num_predict 4096
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.1
+```
+
+```bash
+# Create custom model
+docker exec -it smarteatai_ollama ollama create smarty -f Modelfile
+
+# Update .env
+OLLAMA_MODEL=smarty:latest
+```
+
+### Multiple Model Support
+
+Run different models for different tasks:
+
+```python
+# Conversational AI: Llama 3.1
+conversational_llm = ChatOllama(
+    model="llama3.1:latest",
+    base_url=settings.OLLAMA_BASE_URL
+)
+
+# Quick validation: Phi-3
+validation_llm = ChatOllama(
+    model="phi3:latest",
+    base_url=settings.OLLAMA_BASE_URL,
+    num_ctx=2048
+)
+```
+
+## Production Considerations
+
+<CardGroup cols={2}>
+  <Card title="Load Balancing" icon="scale-balanced">
+    Run multiple Ollama instances behind a load balancer for high traffic
+  </Card>
+  <Card title="Model Caching" icon="database">
+    Keep models loaded in memory with `OLLAMA_MAX_LOADED_MODELS=1`
+  </Card>
+  <Card title="Monitoring" icon="chart-line">
+    Track inference latency, GPU utilization, and error rates
+  </Card>
+  <Card title="Fallback" icon="life-ring">
+    Implement graceful degradation if Ollama is unavailable
+  </Card>
+</CardGroup>
+
+<Warning>
+**Rate Limiting**: With `OLLAMA_NUM_PARALLEL=1`, only one request is processed at a time. Consider horizontal scaling for production.
+</Warning>
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card title="Ollama Documentation" icon="book" href="https://ollama.com/docs">
+    Official Ollama setup and API reference
+  </Card>
+  <Card title="LangChain Ollama" icon="link" href="https://python.langchain.com/docs/integrations/llms/ollama">
+    LangChain integration guide
+  </Card>
+  <Card title="Model Library" icon="cube" href="https://ollama.com/library">
+    Browse available models
+  </Card>
+  <Card title="NVIDIA Toolkit" icon="microchip" href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/">
+    GPU container setup
+  </Card>
+</CardGroup>
+
+<Card title="Related Documentation" icon="link">
+  - [AI Agent](/development/ai-agent) - How Smarty uses Ollama
+  - [Environment Variables](/development/environment-variables) - Backend configuration options
+</Card>

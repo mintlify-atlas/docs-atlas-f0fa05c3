@@ -1,0 +1,222 @@
+---
+title: "Get Current Plan"
+api: "GET /plan/current"
+description: "Retrieve the current active meal plan for the authenticated user"
+---
+
+## Authentication
+
+This endpoint requires authentication. Include a valid JWT token in the Authorization header.
+
+```
+Authorization: Bearer <token>
+```
+
+## Response
+
+<ResponseField name="id" type="integer" required>
+  Unique identifier for the plan
+</ResponseField>
+
+<ResponseField name="user_id" type="integer" required>
+  ID of the user who owns this plan
+</ResponseField>
+
+<ResponseField name="active" type="boolean" required>
+  Indicates whether the plan is active
+</ResponseField>
+
+<ResponseField name="created_at" type="datetime" required>
+  Timestamp when the plan was created
+</ResponseField>
+
+<ResponseField name="updated_at" type="datetime" required>
+  Timestamp when the plan was last updated
+</ResponseField>
+
+<ResponseField name="daily_menus" type="array" required>
+  List of daily menus in the plan
+  
+  <ResponseField name="id" type="integer" required>
+    Unique identifier for the daily menu
+  </ResponseField>
+  
+  <ResponseField name="day_of_week" type="integer" required>
+    Day of the week (1-7, where 1 is Monday)
+  </ResponseField>
+  
+  <ResponseField name="meal_details" type="array" required>
+    List of meal details for this day
+    
+    <ResponseField name="id" type="integer" required>
+      ID of the meal detail
+    </ResponseField>
+    
+    <ResponseField name="recipe_id" type="integer" required>
+      Recipe ID associated with the meal detail
+    </ResponseField>
+    
+    <ResponseField name="schedule" type="integer" required>
+      Order of meals (1-6)
+    </ResponseField>
+    
+    <ResponseField name="status" type="integer" required>
+      Status of the meal detail (0: pending, 1: completed)
+    </ResponseField>
+    
+    <ResponseField name="meal_type" type="string" required>
+      Type of meal. Possible values: `breakfast`, `lunch`, `dinner`, `snack`
+    </ResponseField>
+    
+    <ResponseField name="recipe" type="object" required>
+      Associated recipe details
+      
+      <ResponseField name="id" type="integer" required>
+        Unique identifier for the recipe
+      </ResponseField>
+      
+      <ResponseField name="name" type="string" required>
+        Name of the recipe
+      </ResponseField>
+      
+      <ResponseField name="calories" type="integer" required>
+        Calorie content (minimum: 0)
+      </ResponseField>
+      
+      <ResponseField name="protein" type="integer" required>
+        Protein content in grams (minimum: 0)
+      </ResponseField>
+      
+      <ResponseField name="carbs" type="integer" required>
+        Carbohydrate content in grams (minimum: 0)
+      </ResponseField>
+      
+      <ResponseField name="fat" type="integer" required>
+        Fat content in grams (minimum: 0)
+      </ResponseField>
+      
+      <ResponseField name="image_url" type="string">
+        URL to the recipe image
+      </ResponseField>
+      
+      <ResponseField name="recipe_url" type="string">
+        URL to the full recipe details
+      </ResponseField>
+      
+      <ResponseField name="recipe_id" type="integer" required>
+        External recipe identifier
+      </ResponseField>
+      
+      <ResponseField name="ingredients" type="string" required>
+        Comma-separated list of ingredients
+      </ResponseField>
+      
+      <ResponseField name="meal_types" type="array" required>
+        List of applicable meal types
+        
+        <ResponseField name="id" type="integer" required>
+          Category ID
+        </ResponseField>
+        
+        <ResponseField name="name" type="string" required>
+          Category name
+        </ResponseField>
+      </ResponseField>
+      
+      <ResponseField name="diet_types" type="array" required>
+        List of applicable diet types
+        
+        <ResponseField name="id" type="integer" required>
+          Category ID
+        </ResponseField>
+        
+        <ResponseField name="name" type="string" required>
+          Category name
+        </ResponseField>
+      </ResponseField>
+    </ResponseField>
+  </ResponseField>
+</ResponseField>
+
+## Response Example
+
+```json
+{
+  "id": 1,
+  "user_id": 42,
+  "active": true,
+  "created_at": "2026-03-01T10:00:00Z",
+  "updated_at": "2026-03-01T10:00:00Z",
+  "daily_menus": [
+    {
+      "id": 1,
+      "day_of_week": 1,
+      "meal_details": [
+        {
+          "id": 1,
+          "recipe_id": 12345,
+          "schedule": 1,
+          "status": 0,
+          "meal_type": "breakfast",
+          "recipe": {
+            "id": 1,
+            "name": "Spaghetti Carbonara",
+            "calories": 400,
+            "protein": 20,
+            "carbs": 50,
+            "fat": 15,
+            "image_url": "https://example.com/image.jpg",
+            "recipe_url": "https://example.com/recipe",
+            "recipe_id": 12345,
+            "ingredients": "Spaghetti, eggs, pancetta, parmesan cheese, black pepper",
+            "meal_types": [
+              {
+                "id": 1,
+                "name": "lunch"
+              }
+            ],
+            "diet_types": [
+              {
+                "id": 1,
+                "name": "high_protein"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Error Responses
+
+<ResponseField name="401 Unauthorized">
+  The request lacks valid authentication credentials
+  
+  ```json
+  {
+    "detail": "Not authenticated"
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="404 Not Found">
+  No active plan found for the current user
+  
+  ```json
+  {
+    "detail": "Plan not found"
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="500 Internal Server Error">
+  An unexpected error occurred on the server
+  
+  ```json
+  {
+    "detail": "Internal server error"
+  }
+  ```
+</ResponseField>

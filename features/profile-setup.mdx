@@ -1,0 +1,306 @@
+---
+title: 'Profile Setup'
+description: 'Configure your biometrics, goals, and dietary preferences for personalized nutrition plans'
+icon: 'user-gear'
+---
+
+## Overview
+
+Profile Setup is the foundation of your SmartEat AI experience. It collects essential information about your body, lifestyle, and dietary preferences to calculate personalized nutritional targets and generate meal plans tailored specifically to you.
+
+<img
+  className="block"
+  src="https://github.com/user-attachments/assets/8b05c0b8-f5d0-4a53-8e33-31c823e6af32"
+  alt="SmartEat AI Profile Setup"
+/>
+
+<Note>
+  **First-Time Users**: You must complete your profile before accessing other features. This ensures SmartEat AI can provide accurate, personalized recommendations.
+</Note>
+
+## What It Does
+
+The Profile Setup feature gathers comprehensive information to power your personalized nutrition experience:
+
+- **Biometric Data Collection**: Records your physical measurements and characteristics
+- **Goal Configuration**: Defines your nutrition objectives (weight loss, maintenance, or gain)
+- **Dietary Preference Management**: Captures your eating style, restrictions, and taste preferences
+- **Automatic Target Calculation**: Computes your daily caloric and macronutrient needs
+
+## How to Set Up Your Profile
+
+<Steps>
+  <Step title="Access Profile Settings">
+    Navigate to **Nutrition Settings** from the sidebar menu. First-time users are automatically redirected here.
+  </Step>
+  
+  <Step title="Enter Biometric Information">
+    Fill in your physical data in the Biometrics section:
+    - Age (16-100 years)
+    - Height (140-220 cm)
+    - Weight (35-300 kg)
+    - Gender
+    - Body type (ectomorph, mesomorph, endomorph)
+    - Body fat percentage (optional)
+  </Step>
+  
+  <Step title="Define Your Goals">
+    Select your nutritional objective and activity level:
+    - **Goal**: Weight loss (deficit), maintenance, or muscle gain (surplus)
+    - **Activity Level**: Sedentary, lightly active, moderately active, very active, or extremely active
+  </Step>
+  
+  <Step title="Set Dietary Preferences">
+    Customize your eating preferences:
+    - **Meals per day**: 1-6 meals
+    - **Diet type**: Vegan, vegetarian, pescatarian, omnivore, etc.
+    - **Restrictions**: Allergies or intolerances (gluten-free, dairy-free, nut-free, etc.)
+    - **Tastes**: Ingredients you like or dislike
+  </Step>
+  
+  <Step title="Save Your Profile">
+    Click **"Save Profile"** at the bottom. The system will validate your inputs and calculate your personalized nutritional targets.
+    
+    <Check>
+      You'll see a success message when your profile is saved successfully.
+    </Check>
+  </Step>
+</Steps>
+
+## Key Sections
+
+### Biometrics Section
+
+<CardGroup cols={2}>
+  <Card title="Physical Measurements" icon="ruler">
+    **Required Fields:**
+    - Age or birth date
+    - Height (cm)
+    - Weight (kg)
+    - Gender
+    - Body type
+    
+    **Optional:**
+    - Body fat percentage
+  </Card>
+  
+  <Card title="Automatic Calculations" icon="calculator">
+    Based on your biometrics, the system calculates:
+    - Basal Metabolic Rate (BMR)
+    - Total Daily Energy Expenditure (TDEE)
+    - Recommended caloric intake
+    - Macronutrient distribution
+  </Card>
+</CardGroup>
+
+<Info>
+  **Body Type Guide:**
+  - **Ectomorph**: Naturally lean, fast metabolism
+  - **Mesomorph**: Athletic build, gains muscle easily
+  - **Endomorph**: Larger frame, slower metabolism
+</Info>
+
+### Goal Section
+
+<Tabs>
+  <Tab title="Weight Loss (Deficit)">
+    Creates a caloric deficit for gradual, sustainable weight loss. The system reduces your maintenance calories by an appropriate percentage based on your profile.
+    
+    **Best for:**
+    - Losing body fat
+    - Improving body composition
+    - Reducing weight gradually
+  </Tab>
+  
+  <Tab title="Maintenance">
+    Maintains your current weight while meeting nutritional needs. Calories match your Total Daily Energy Expenditure.
+    
+    **Best for:**
+    - Stable weight
+    - Balanced nutrition
+    - Sustaining current fitness
+  </Tab>
+  
+  <Tab title="Muscle Gain (Surplus)">
+    Creates a caloric surplus to support muscle growth and strength gains. Increases protein intake for optimal muscle synthesis.
+    
+    **Best for:**
+    - Building muscle mass
+    - Strength training support
+    - Athletic performance
+  </Tab>
+</Tabs>
+
+### Activity Level
+
+Your activity level significantly impacts your caloric needs:
+
+| Activity Level | Description | Daily Activity |
+|---|---|---|
+| **Sedentary** | Little to no exercise | Desk job, minimal movement |
+| **Lightly Active** | Light exercise 1-3 days/week | Walking, light sports |
+| **Moderately Active** | Moderate exercise 3-5 days/week | Regular gym sessions |
+| **Very Active** | Hard exercise 6-7 days/week | Intense training, athletic |
+| **Extremely Active** | Very hard exercise, physical job | Professional athlete level |
+
+### Preferences Section
+
+<AccordionGroup>
+  <Accordion title="Meals Per Day">
+    Choose how many meals you want to eat daily (1-6).
+    
+    - **3 meals**: Traditional breakfast, lunch, dinner
+    - **5 meals**: Includes mid-morning and afternoon snacks
+    - **6 meals**: Maximum frequency for bodybuilding or metabolism support
+    
+    The system distributes your daily calories across your chosen number of meals.
+  </Accordion>
+  
+  <Accordion title="Diet Types">
+    Select your eating philosophy:
+    
+    - **Vegan**: No animal products
+    - **Vegetarian**: No meat or fish
+    - **Pescatarian**: Includes fish, no other meat
+    - **Omnivore**: All foods
+    - **Keto**: High fat, very low carb
+    - **Paleo**: Whole foods, no processed items
+    
+    You can select multiple diet types if applicable.
+  </Accordion>
+  
+  <Accordion title="Restrictions">
+    Specify any allergies or dietary restrictions:
+    
+    - Gluten-free
+    - Dairy-free
+    - Nut-free
+    - Soy-free
+    - Egg-free
+    - Shellfish-free
+    
+    The meal planner excludes recipes containing your restricted ingredients.
+  </Accordion>
+  
+  <Accordion title="Tastes & Preferences">
+    Add ingredients you particularly like or dislike. This helps the AI recommend recipes you'll actually enjoy.
+    
+    Examples:
+    - Love: Chicken, broccoli, quinoa
+    - Dislike: Mushrooms, cilantro, olives
+  </Accordion>
+</AccordionGroup>
+
+## Interactive Features
+
+<CardGroup cols={2}>
+  <Card title="Real-Time Validation" icon="shield-check">
+    The form validates your inputs as you type, showing error messages for invalid entries (e.g., age out of range, negative values).
+  </Card>
+  
+  <Card title="Smart Defaults" icon="wand-magic-sparkles">
+    If you leave optional fields blank, the system applies sensible defaults based on research and best practices.
+  </Card>
+  
+  <Card title="Edit Anytime" icon="pen-to-square">
+    You can update your profile at any time. Changes affect future meal plans but don't alter existing plans.
+  </Card>
+  
+  <Card title="Multi-Select Options" icon="list-check">
+    Easily add or remove diet types, restrictions, and taste preferences with searchable dropdown menus.
+  </Card>
+</CardGroup>
+
+## Form Validation
+
+<Warning>
+  **Required Fields**: You must fill in all required fields before saving. The system highlights missing or invalid entries in red.
+</Warning>
+
+### Common Validation Rules
+
+- **Age**: Must be between 16 and 100 years
+- **Height**: Must be between 140-220 cm
+- **Weight**: Must be between 35-300 kg
+- **Meals per day**: Must be between 1-6
+- **Numeric fields**: Cannot be negative
+- **Body fat percentage**: If provided, must be 0 or greater
+
+## Calculated Nutritional Targets
+
+After saving your profile, SmartEat AI automatically calculates:
+
+<Card title="Personalized Targets" icon="bullseye">
+  - **Daily Calories**: Based on your TDEE and goal
+  - **Protein Target**: For muscle maintenance/growth
+  - **Carbohydrate Target**: For energy and performance
+  - **Fat Target**: For hormonal health and satiety
+</Card>
+
+These targets are displayed in your Dashboard and used to generate meal plans.
+
+## Use Cases
+
+<AccordionGroup>
+  <Accordion title="Initial Onboarding">
+    New users must complete their profile before generating their first meal plan. This 5-10 minute setup ensures accurate recommendations from day one.
+  </Accordion>
+  
+  <Accordion title="Updating Goals">
+    If you achieve your weight loss goal and want to maintain, simply change your goal setting. The system recalculates your targets immediately.
+  </Accordion>
+  
+  <Accordion title="Adjusting for Life Changes">
+    Update your profile when:
+    - You lose or gain weight
+    - Your activity level changes (new job, training program)
+    - You develop new dietary restrictions
+    - Your preferences evolve
+  </Accordion>
+  
+  <Accordion title="Fine-Tuning Preferences">
+    As you use SmartEat AI, you may discover new foods you love or realize certain diet types work better for you. Update your preferences anytime.
+  </Accordion>
+  
+  <Accordion title="Sharing with Healthcare Providers">
+    Your profile provides a comprehensive view of your nutritional approach, useful for discussions with dietitians or doctors.
+  </Accordion>
+</AccordionGroup>
+
+## Tips for Accurate Setup
+
+<Tip>
+  **Be Honest**: Accurate data leads to better results. Don't underestimate your weight or overestimate your activity level.
+</Tip>
+
+<Tip>
+  **Start Conservative**: If unsure about activity level, choose the lower option. You can always adjust later.
+</Tip>
+
+<Tip>
+  **Include All Restrictions**: Even minor intolerances should be listed to avoid uncomfortable meal suggestions.
+</Tip>
+
+<Tip>
+  **Review Before Saving**: Double-check all entries before clicking Save Profile to avoid having to re-enter information.
+</Tip>
+
+## Toast Notifications
+
+The system provides feedback through toast notifications:
+
+- **Success**: "Profile saved!" (green)
+- **Error**: "Please fill all required fields." or specific validation errors (red)
+- **API Errors**: If the server is unavailable, you'll see an error message
+
+## Related Features
+
+- **[AI Chat](/features/ai-chat)**: After setting up your profile, use the AI Chat to generate your first meal plan
+- **[Dashboard](/features/dashboard)**: View your calculated nutritional targets on the Dashboard
+- **[My Plan](/features/meal-planning)**: See how your preferences influence meal recommendations
+
+---
+
+<Card title="Profile Privacy" icon="lock" iconType="solid">
+  Your profile data is stored securely and used only to personalize your SmartEat AI experience. We never share your information with third parties.
+</Card>

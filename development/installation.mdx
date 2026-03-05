@@ -1,0 +1,220 @@
+---
+title: 'Installation'
+description: 'Set up SmartEat AI locally for development'
+---
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed on your system:
+
+- **Node.js 20+** - For the frontend application
+- **Python 3.9+** - For the backend API
+- **PostgreSQL 15** - Database server
+- **Git** - For cloning the repository
+
+<Note>
+  If you prefer using Docker, see the [Docker Setup](/development/docker-setup) guide for containerized development.
+</Note>
+
+## Cloning the Repository
+
+Clone the SmartEat AI repository to your local machine:
+
+```bash
+git clone https://github.com/SmartEatAI/smart-eat-ai.git
+cd smart-eat-ai
+```
+
+## Environment Configuration
+
+Copy the example environment file and configure your local settings:
+
+```bash
+cp .env.example .env
+```
+
+Edit the `.env` file with your local credentials. See the [Environment Variables](/development/environment-variables) reference for detailed descriptions of each variable.
+
+<Note>
+  Make sure to update the `SECRET_KEY` with a secure random string before running in production.
+</Note>
+
+## Backend Installation
+
+<Steps>
+  <Step title="Navigate to backend directory">
+    ```bash
+    cd backend
+    ```
+  </Step>
+
+  <Step title="Install Python dependencies">
+    ```bash
+    pip install -r ../docker/backend/requirements.txt
+    ```
+
+    This installs all required packages including:
+    - FastAPI - Web framework
+    - SQLAlchemy - Database ORM
+    - Alembic - Database migrations
+    - scikit-learn, joblib - ML models
+    - LangChain, LangGraph - AI agents
+  </Step>
+
+  <Step title="Run database migrations">
+    Apply all database migrations to set up the schema:
+
+    ```bash
+    alembic upgrade head
+    ```
+  </Step>
+
+  <Step title="(Optional) Seed the database">
+    Populate the database with sample data:
+
+    ```bash
+    python app/seeders/run_seed.py
+    ```
+
+    This inserts users, categories, profiles, recipes, and meal plans.
+  </Step>
+
+  <Step title="Start the backend server">
+    ```bash
+    uvicorn app.main:app --reload
+    ```
+
+    The API will be available at:
+    - API: http://localhost:8000
+    - Swagger Docs: http://localhost:8000/docs
+    - ReDoc: http://localhost:8000/redoc
+  </Step>
+</Steps>
+
+### Backend Health Check
+
+Verify the backend is running correctly:
+
+<CodeGroup>
+```bash cURL
+curl http://localhost:8000/health
+```
+
+```bash HTTPie
+http GET http://localhost:8000/health
+```
+</CodeGroup>
+
+## Frontend Installation
+
+<Steps>
+  <Step title="Navigate to frontend directory">
+    ```bash
+    cd frontend
+    ```
+  </Step>
+
+  <Step title="Install Node dependencies">
+    ```bash
+    npm install
+    ```
+
+    This installs:
+    - Next.js - React framework
+    - TypeScript - Type safety
+    - Tailwind CSS - Styling
+    - React Context API - State management
+  </Step>
+
+  <Step title="Start the development server">
+    ```bash
+    npm run dev
+    ```
+
+    The frontend will be available at http://localhost:3000
+  </Step>
+</Steps>
+
+## Verification
+
+Once both services are running, you should be able to:
+
+1. Access the frontend at http://localhost:3000
+2. Create a new user account
+3. Log in and complete your profile
+4. View the dashboard and interact with the chat
+
+<Note>
+  The frontend needs the backend API to be running to function properly. Make sure both services are started.
+</Note>
+
+## Database Migrations
+
+Whenever you modify database models, create and apply migrations:
+
+<CodeGroup>
+```bash Create Migration
+alembic revision --autogenerate -m "describe your change"
+```
+
+```bash Apply Migration
+alembic upgrade head
+```
+
+```bash Rollback Migration
+alembic downgrade -1
+```
+
+```bash View History
+alembic history
+```
+</CodeGroup>
+
+## Development Tools
+
+### API Documentation
+
+- **Swagger UI**: http://localhost:8000/docs - Interactive API documentation
+- **ReDoc**: http://localhost:8000/redoc - Alternative API documentation
+
+### Code Quality
+
+The frontend includes ESLint and Prettier for code quality:
+
+```bash
+npm run lint
+```
+
+## Troubleshooting
+
+### Backend Issues
+
+**Database connection errors**
+- Verify PostgreSQL is running
+- Check `DATABASE_URL` in `.env` matches your PostgreSQL credentials
+- Ensure the database exists: `createdb smarteatai`
+
+**Migration errors**
+- Delete the `alembic/versions` folder and start fresh
+- Check for model conflicts in `backend/app/models/`
+
+### Frontend Issues
+
+**Port already in use**
+```bash
+# Change the port in package.json or kill the process
+lsof -ti:3000 | xargs kill -9
+```
+
+**Module not found errors**
+```bash
+# Clear cache and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+## Next Steps
+
+- Configure [Docker Setup](/development/docker-setup) for containerized development
+- Review [Environment Variables](/development/environment-variables) for advanced configuration
+- Explore the API documentation at http://localhost:8000/docs

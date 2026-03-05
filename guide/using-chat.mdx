@@ -1,0 +1,498 @@
+---
+title: Using the AI Chat Assistant
+description: Learn how to interact with SmartEat AI's intelligent nutrition assistant
+---
+
+SmartEat AI's chat assistant is your personal nutrition expert, powered by advanced AI. It understands natural language, accesses your profile and meal plan, and uses specialized tools to help you achieve your nutrition goals.
+
+## What the AI Assistant Can Do
+
+The assistant has access to powerful tools that enable it to:
+
+- **View your profile**: Understand your goals, restrictions, and preferences
+- **Check your meal plan**: See your current weekly menu and schedule
+- **Generate weekly plans**: Create personalized 7-day meal plans
+- **Search recipes**: Find specific dishes by criteria
+- **Suggest alternatives**: Recommend recipe swaps for variety or preferences
+- **Replace meals**: Update individual meals in your existing plan
+- **Update preferences**: Modify your dietary preferences through conversation
+
+<Note>
+The AI maintains conversation context throughout each day, so you don't need to repeat information.
+</Note>
+
+## Starting a Conversation
+
+### First Interaction
+
+When you first chat with the assistant, try:
+
+```
+"Hi! I'm ready to start my nutrition journey."
+"Hello, can you help me with meal planning?"
+"Hey there, I need help with my diet."
+```
+
+The AI will:
+1. Greet you personally
+2. Retrieve your profile information
+3. Offer relevant assistance based on your current state
+
+<Tip>
+The assistant automatically loads your profile and current plan at the start of each conversation, so it's always aware of your context.
+</Tip>
+
+### Returning Users
+
+For subsequent chats:
+
+```
+"Show me my plan for today"
+"I need to swap a meal"
+"Generate a new weekly plan"
+```
+
+The assistant remembers your preferences within the same day (thread-based memory).
+
+## Common Tasks and Examples
+
+<Steps>
+
+### Viewing Your Profile
+
+Ask about your information:
+
+```
+"What's my profile?"
+"Show my dietary restrictions"
+"What are my nutrition targets?"
+"Tell me about my preferences"
+```
+
+**What happens:**
+- AI uses `get_user_profile_summary` tool
+- Retrieves your complete profile data
+- Displays relevant information in a readable format
+
+### Checking Your Meal Plan
+
+View your current weekly menu:
+
+```
+"Show my meal plan"
+"What's on my menu this week?"
+"What am I eating today?"
+"View my weekly meals"
+```
+
+**What happens:**
+- AI uses `get_current_plan_summary` tool
+- Retrieves your active 7-day plan
+- Displays complete weekly breakdown with all meals
+- Shows nutritional information for each recipe
+
+<Note>
+The AI will display your FULL weekly plan without summarizing. Expect to see all 7 days with every scheduled meal.
+</Note>
+
+### Generating a New Plan
+
+Create a fresh weekly menu:
+
+```
+"Generate a new meal plan"
+"I need a weekly menu"
+"Create a 7-day plan for me"
+"Start a new nutrition plan"
+```
+
+**What happens:**
+- AI uses `generate_weekly_plan` tool
+- Filters recipes based on your profile
+- Generates 7 days with all meals scheduled
+- Deactivates any existing plan
+- Confirms successful creation
+
+<Warning>
+Generating a new plan replaces your current active plan. If you only want to change one or two meals, use the swap feature instead.
+</Warning>
+
+### Searching for Recipes
+
+Find specific dishes:
+
+```
+"Find high-protein breakfast recipes"
+"Show me vegan dinner options"
+"Search for low-carb lunches under 400 calories"
+"What chicken recipes do you have?"
+```
+
+**What happens:**
+- AI uses `search_recipes_by_criteria` tool
+- Filters by meal type, diet type, calorie range, and ingredients
+- Returns matching recipes with full nutritional data
+- Presents options in an easy-to-read format
+
+### Suggesting Alternatives
+
+Get recipe recommendations:
+
+```
+"Suggest alternatives to salmon"
+"I want something different for dinner"
+"Show me other breakfast options"
+"What can I eat instead of chicken?"
+```
+
+**What happens:**
+- AI uses `suggest_recipe_alternatives` tool
+- Finds recipes similar in nutrition and meal type
+- Considers your preferences and restrictions
+- Presents 3-5 suitable alternatives
+
+<Tip>
+The AI can suggest alternatives for any recipe, whether it's in your current plan or not.
+</Tip>
+
+### Replacing Meals in Your Plan
+
+Swap out specific meals:
+
+```
+"Replace my lunch on Tuesday"
+"Swap tonight's dinner for something else"
+"Change breakfast on day 3"
+"I don't like this meal, give me another option"
+```
+
+**What happens:**
+- AI uses `replace_meal_in_plan` tool
+- Identifies the specific meal to replace
+- Finds a suitable alternative
+- Updates your plan in the database
+- Confirms the change
+
+### Updating Preferences
+
+Modify your dietary preferences:
+
+```
+"Add peanut allergy to my restrictions"
+"I want to try a high-protein diet"
+"Remove dairy from my preferences"
+"Update my taste preferences to include Mediterranean cuisine"
+```
+
+**What happens:**
+- AI uses `update_user_preference` tool
+- Modifies your profile preferences
+- Saves changes to database
+- Recommends regenerating your plan if changes are significant
+
+</Steps>
+
+## How the AI Thinks
+
+### Tool Selection
+
+The assistant intelligently chooses which tools to use based on your request:
+
+**User says:** "Show me my plan"
+**AI thinks:** User wants to view current plan → Use `get_current_plan_summary`
+
+**User says:** "I need alternatives to this recipe"
+**AI thinks:** User wants recipe suggestions → Use `suggest_recipe_alternatives`
+
+**User says:** "Create a meal plan"
+**AI thinks:** User wants new 7-day plan → Use `generate_weekly_plan`
+
+### Context Awareness
+
+The AI maintains awareness of:
+
+- **Your profile**: Goals, restrictions, preferences
+- **Your current plan**: Active meals and schedule
+- **Conversation history**: Previous messages in the current day
+- **Your user ID**: Automatically embedded in each message
+
+<Note>
+Conversation context resets daily. Each day starts a new thread for privacy and performance.
+</Note>
+
+## Advanced Usage
+
+### Combining Requests
+
+You can ask complex questions:
+
+```
+"Show my plan and suggest an alternative for lunch tomorrow"
+"Generate a new plan and make sure it's high in protein"
+"Search for vegan recipes and add them to my preferences"
+```
+
+The AI will:
+1. Break down your request into steps
+2. Use multiple tools in sequence
+3. Provide comprehensive responses
+
+### Conversational Refinement
+
+Have back-and-forth discussions:
+
+```
+You: "Show me dinner options"
+AI: [Lists 5 dinner recipes]
+
+You: "I want something with chicken"
+AI: [Filters to chicken dinners]
+
+You: "The second one looks good, add it to my plan for tonight"
+AI: [Replaces tonight's dinner]
+```
+
+<Tip>
+The AI remembers context within the conversation, so you can reference "the second one" or "that recipe" naturally.
+</Tip>
+
+### Asking for Explanations
+
+Understand the "why" behind recommendations:
+
+```
+"Why did you choose this recipe for me?"
+"How do these macros fit my goals?"
+"Explain my calorie target"
+"Why can't I have that recipe?"
+```
+
+The AI will explain its reasoning based on your profile and goals.
+
+## Response Format
+
+### Typical Response Structure
+
+The AI provides:
+
+1. **Acknowledgment**: Confirms it understood your request
+2. **Action**: Uses appropriate tools
+3. **Results**: Displays retrieved information or confirms changes
+4. **Guidance**: Offers next steps or suggestions
+
+### Example Response
+
+**Your request:** "Show my meal plan"
+
+**AI response:**
+```
+Here's your weekly nutritional plan summary:
+
+Status: Active
+Duration: 7 days
+Total meals: 21
+Plan ID: 42
+
+**Monday**
+1. Scrambled Eggs with Avocado
+- 420 kcal, 28g protein, 12g carbs, 30g fat
+[View recipe](url)
+
+2. Grilled Chicken Salad
+- 380 kcal, 42g protein, 20g carbs, 14g fat
+[View recipe](url)
+
+... [continues for all 7 days]
+```
+
+## Understanding AI Limitations
+
+### What the AI Cannot Do
+
+- **Access external meal tracking apps**: Cannot sync with MyFitnessPal, etc.
+- **Create custom recipes**: Works with pre-loaded recipe database only
+- **Track real-time consumption**: Meal status updates are manual
+- **Provide medical advice**: Not a substitute for healthcare professionals
+- **Modify past plans**: Can only work with your current active plan
+
+<Warning>
+Always consult healthcare providers for medical nutrition questions, especially regarding allergies, medications, or health conditions.
+</Warning>
+
+### When AI May Struggle
+
+**Very specific requests:**
+```
+"I need a recipe with exactly 437 calories using these 12 specific ingredients"
+```
+**Why:** Recipe database may not have exact matches
+
+**Contradictory requirements:**
+```
+"High calorie but low in all macros"
+```
+**Why:** Mathematically impossible (calories come from macros)
+
+**Ambiguous time references:**
+```
+"Change my meal from before"
+```
+**Why:** AI needs specific meal identification (day, time, or recipe name)
+
+<Tip>
+If the AI doesn't understand, rephrase your request with more specific details.
+</Tip>
+
+## Conversation Etiquette
+
+### Be Specific
+
+❌ **Vague:** "Change something"
+✅ **Specific:** "Replace my lunch on Wednesday"
+
+❌ **Vague:** "Find recipes"
+✅ **Specific:** "Find high-protein breakfast recipes under 400 calories"
+
+### Use Natural Language
+
+You don't need perfect syntax:
+
+```
+"hey can u show me my plan plz" ✅
+"Display current meal plan data" ✅
+"plan?" ✅ (though more context helps)
+```
+
+### Provide Feedback
+
+If the AI suggests something you don't like:
+
+```
+"I don't like fish, show me other options"
+"That's too high in carbs for me"
+"Perfect, let's go with that one"
+```
+
+The AI will adjust based on your feedback.
+
+## Privacy and Security
+
+### Data Access
+
+The AI assistant can access:
+- Your profile information (stored with your account)
+- Your current active meal plan
+- Your conversation history (current day only)
+
+### Data Protection
+
+- Conversations are associated with your user ID
+- Daily conversation threads prevent long-term tracking
+- The AI cannot access other users' data
+- Profile updates require your authentication
+
+<Note>
+Your data is used only to provide personalized nutrition guidance. It is not shared with third parties.
+</Note>
+
+## Troubleshooting
+
+### "Profile not found"
+
+**Cause:** You haven't created a profile yet.
+
+**Solution:** [Create your profile](/guide/creating-profile) before using the assistant.
+
+### "No active plan found"
+
+**Cause:** You don't have a current meal plan.
+
+**Solution:** Ask the AI to generate a plan:
+```
+"Generate a weekly plan for me"
+```
+
+### "No recipes available that meet restrictions"
+
+**Cause:** Your profile criteria are too restrictive.
+
+**Solution:**
+- Review and relax some dietary restrictions
+- Add more diet type options to your profile
+- Ask the AI: "Why can't you generate a plan?"
+
+### AI Doesn't Use Tools
+
+**Cause:** Request may be too general or conversational.
+
+**Solution:** Be more specific about what you want:
+❌ "Tell me about food"
+✅ "Show me my meal plan"
+
+<Warning>
+If the AI consistently fails to use tools, check that your profile is complete and you have an active internet connection.
+</Warning>
+
+## Best Practices
+
+### Daily Check-Ins
+
+Start each day by asking:
+```
+"What's on my menu today?"
+```
+
+This helps you:
+- Plan meal prep
+- Adjust schedule if needed
+- Stay accountable
+
+### Weekly Planning
+
+Every Sunday:
+```
+"Generate a new meal plan for the week"
+```
+
+Fresh plans provide:
+- Renewed motivation
+- Recipe variety
+- Adaptation to updated preferences
+
+### Immediate Adjustments
+
+When life happens:
+```
+"I need to swap dinner tonight—I'm eating out"
+"Replace tomorrow's lunch with something I can meal prep"
+```
+
+Flexibility prevents:
+- Plan abandonment
+- Stress about adherence
+- All-or-nothing thinking
+
+### Learning Your Preferences
+
+The AI improves with feedback:
+```
+"I loved that recipe, give me more like it"
+"This meal type doesn't work for my schedule"
+"I prefer simpler recipes with fewer ingredients"
+```
+
+<Tip>
+The more you interact with the AI, the better it understands your preferences and communication style.
+</Tip>
+
+## Next Steps
+
+Now that you understand the AI assistant:
+
+- Start a conversation and [view your profile](/guide/creating-profile)
+- Ask the AI to [generate your first meal plan](/guide/generating-plans)
+- Use the chat to [track and adjust your nutrition](/guide/tracking-nutrition)
+
+<Note>
+The AI is designed to make nutrition planning effortless. Don't hesitate to ask questions or request help!
+</Note>

@@ -1,97 +1,68 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "SmartEat AI Documentation"
+description: "AI-powered personalized meal planning and nutrition tracking platform"
 ---
 
-## Setting up
+<img
+  className="block"
+  src="https://media.brand.dev/ca17bffa-244b-4a87-99b5-c8ba74cb1960.png"
+  alt="SmartEat AI"
+  style={{ maxWidth: '200px', margin: '0 auto 2rem' }}
+/>
 
-Get your documentation site up and running in minutes.
+# Welcome to SmartEat AI
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+SmartEat AI is an intelligent nutrition platform that combines artificial intelligence with personalized meal planning to help you achieve your health and wellness goals. Built as a Master's thesis project in AI and Big Data specialization, it leverages cutting-edge machine learning and natural language processing to deliver customized nutrition recommendations.
 
-## Make it yours
+## Key Features
 
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="AI Meal Planning" icon="utensils" href="/features/meal-planning">
+    Generate personalized weekly meal plans based on your dietary preferences, restrictions, and nutritional goals
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Smart Chat Assistant" icon="comments" href="/features/ai-chat">
+    Interact with Smarty, your AI nutrition assistant powered by LangChain and Ollama LLM
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Nutrition Tracking" icon="chart-line" href="/features/dashboard">
+    Monitor your daily calorie intake and macronutrient distribution in real-time
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="ML Recommendations" icon="sparkles" href="/development/knn-recommender">
+    Get intelligent recipe suggestions using KNN-based machine learning models
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Quick Start
 
-Everything you need to create world-class documentation.
+Get up and running with SmartEat AI in minutes.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
+<CardGroup cols={2}>
+  <Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+    Set up your development environment and run the application
   </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
+  <Card title="Create Your Profile" icon="user" href="/guide/creating-profile">
+    Configure your dietary preferences and nutritional goals
   </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
+  <Card title="Architecture Overview" icon="sitemap" href="/development/architecture">
+    Learn about the system architecture and technology stack
   </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
+  <Card title="API Reference" icon="code" href="/api/authentication/overview">
+    Explore the REST API endpoints and integration options
   </Card>
-</Columns>
+</CardGroup>
 
-## Need inspiration?
+## Technology Stack
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
+SmartEat AI is built with modern technologies:
+
+- **Frontend**: Next.js 16, TypeScript, Tailwind CSS, shadcn/ui
+- **Backend**: FastAPI, Python, PostgreSQL, SQLAlchemy
+- **AI & ML**: LangChain, LangGraph, Ollama, scikit-learn, ChromaDB
+- **Infrastructure**: Docker, Docker Compose, Alembic
+
+## Open Source
+
+SmartEat AI is open source and licensed under MIT. Visit our [GitHub repository](https://github.com/SmartEatAI/smart-eat-ai) to explore the code, contribute, or report issues.
+
+<Card title="View on GitHub" icon="github" href="https://github.com/SmartEatAI/smart-eat-ai">
+  Star us on GitHub and contribute to the project
 </Card>

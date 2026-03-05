@@ -1,0 +1,187 @@
+---
+title: 'ML Pipeline'
+description: 'Machine learning and data science pipeline for recipe recommendations'
+---
+
+## Overview
+
+The SmartEat AI ML pipeline processes recipe data from Food.com to create a personalized recommendation system. The pipeline transforms raw recipe data into a trained K-Nearest Neighbors (KNN) model that powers nutritional recommendations.
+
+## Data Source
+
+The pipeline uses the **Food.com - Recipes and Reviews** dataset from Kaggle, containing over 522,000 recipes with comprehensive nutritional information.
+
+<CardGroup cols={2}>
+  <Card title="Dataset Size" icon="database">
+    522,517 recipes with 28 columns
+  </Card>
+  <Card title="Features" icon="chart-bar">
+    Nutritional data, ingredients, categories, and ratings
+  </Card>
+</CardGroup>
+
+## Pipeline Stages
+
+<Steps>
+  <Step title="Data Acquisition">
+    Download the dataset from Google Drive and load it into a pandas DataFrame using the Python engine for error tolerance.
+    
+    ```python
+    df = pd.read_csv("recipes.csv", engine='python')
+    ```
+    
+    The dataset includes:
+    - Recipe metadata (name, author, category)
+    - Time information (prep time, cook time)
+    - Nutritional content (calories, macronutrients)
+    - Ingredients and instructions
+    - User ratings and reviews
+  </Step>
+
+  <Step title="Data Exploration">
+    Analyze the dataset structure, distributions, and data quality:
+    
+    **Key Findings:**
+    - Complete nutritional data for all recipes
+    - Missing values in optional fields (ratings, servings)
+    - 32,600 duplicate recipe names requiring deduplication
+    
+    **Nutritional Statistics:**
+    - Average calories: 484.4 per serving
+    - Average protein: 17.5g
+    - Average carbohydrates: 49.1g
+    - Average fat: 24.6g
+  </Step>
+
+  <Step title="Data Cleaning">
+    Clean and prepare the dataset for model training:
+    
+    - Remove duplicate recipes (same name)
+    - Handle missing values in non-critical fields
+    - Parse and normalize ingredient lists
+    - Convert categorical data to appropriate formats
+    - Filter outliers in nutritional values
+    
+    The cleaning process reduces the dataset to unique, high-quality recipes suitable for recommendations.
+  </Step>
+
+  <Step title="Feature Engineering">
+    Extract and engineer features for the recommendation model:
+    
+    **Primary Features:**
+    ```python
+    FEATURES = [
+        'calories',
+        'fat_content',
+        'carbohydrate_content',
+        'protein_content'
+    ]
+    ```
+    
+    **Additional Processing:**
+    - Text vectorization of ingredients using TF-IDF
+    - Category encoding for meal types and diet types
+    - Normalization of nutritional values
+    - Creation of derived features (macronutrient ratios)
+  </Step>
+
+  <Step title="Model Training">
+    Train the K-Nearest Neighbors model:
+    
+    ```python
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.neighbors import NearestNeighbors
+    
+    # Scale features
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(df[FEATURES])
+    
+    # Train KNN model
+    knn = NearestNeighbors(n_neighbors=550, metric='euclidean')
+    knn.fit(X_scaled)
+    ```
+    
+    The model uses Euclidean distance to find nutritionally similar recipes.
+  </Step>
+
+  <Step title="Model Persistence">
+    Save the trained model and required artifacts:
+    
+    ```python
+    from joblib import dump
+    
+    dump(df_cleaned, 'df_recetas.joblib')
+    dump(scaler, 'scaler.joblib')
+    dump(knn, 'knn.joblib')
+    ```
+    
+    These files are stored in `backend/app/files/` for production use.
+  </Step>
+</Steps>
+
+## Notebook Reference
+
+The complete pipeline is documented in:
+
+<Card title="ML Training Notebook" icon="book" href="https://github.com/yourusername/smarteat-ai/blob/main/notebooks/Cuaderno_SmartEatAI.ipynb">
+  `notebooks/Cuaderno_SmartEatAI.ipynb` contains the full implementation with visualizations and analysis
+</Card>
+
+## Key Technologies
+
+<CodeGroup>
+```python Data Processing
+import pandas as pd
+import numpy as np
+import regex as re
+import unicodedata
+```
+
+```python ML Libraries
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import NearestNeighbors
+from sklearn.model_selection import train_test_split
+from joblib import dump, load
+```
+
+```python NLP Tools
+import nltk
+from nltk.corpus import wordnet
+from sklearn.feature_extraction.text import TfidfVectorizer
+```
+</CodeGroup>
+
+## Data Quality Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Recipes | 522,517 |
+| Complete Nutritional Data | 100% |
+| Duplicate Names | 32,600 |
+| Average Rating | 4.63/5.0 |
+| Recipes with Reviews | 51.5% |
+
+<Note>
+The pipeline emphasizes data quality over quantity, ensuring that only recipes with complete, accurate nutritional information are used for recommendations.
+</Note>
+
+## Visualizations
+
+The notebook includes comprehensive visualizations:
+- Nutritional distribution histograms
+- Missing data heatmaps
+- Word clouds of ingredients
+- Correlation matrices
+- Recipe category distributions
+
+## Next Steps
+
+After the pipeline completes:
+1. The trained model is loaded into the backend (`backend/app/core/ml_model.py`)
+2. The KNN model powers recipe similarity searches
+3. The scaler ensures consistent feature normalization
+4. The recipe dataframe enables fast lookups
+
+<Card title="Related Documentation" icon="link">
+  See [KNN Recommender](/development/knn-recommender) for details on how the model is used in production.
+</Card>
