@@ -1,0 +1,147 @@
+{
+  "projectType": "saas",
+  "projectName": "SmartEat AI",
+  "projectDescription": "AI-powered personalized meal planning and nutrition tracking platform",
+  "theme": "almond",
+  "primaryColor": "#b2a738",
+  "lightColor": "#f4a494",
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/dashboard",
+              "features/profile-setup",
+              "features/ai-chat",
+              "features/meal-planning"
+            ]
+          },
+          {
+            "group": "User Guide",
+            "pages": [
+              "guide/creating-profile",
+              "guide/generating-plans",
+              "guide/tracking-nutrition",
+              "guide/using-chat"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Development",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "development/architecture",
+              "development/tech-stack"
+            ]
+          },
+          {
+            "group": "Setup",
+            "pages": [
+              "development/installation",
+              "development/docker-setup",
+              "development/environment-variables"
+            ]
+          },
+          {
+            "group": "AI & ML",
+            "pages": [
+              "development/ml-pipeline",
+              "development/knn-recommender",
+              "development/ai-agent",
+              "development/ollama-setup"
+            ]
+          },
+          {
+            "group": "Database",
+            "pages": [
+              "development/database-schema",
+              "development/migrations",
+              "development/seeding-data"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Authentication",
+            "pages": [
+              "api/authentication/overview",
+              "api/authentication/register",
+              "api/authentication/login"
+            ]
+          },
+          {
+            "group": "Profile",
+            "pages": [
+              "api/profile/get-profile",
+              "api/profile/update-profile",
+              "api/profile/preferences"
+            ]
+          },
+          {
+            "group": "Plans",
+            "pages": [
+              "api/plans/get-plan",
+              "api/plans/create-plan",
+              "api/plans/update-meal"
+            ]
+          },
+          {
+            "group": "Chat",
+            "pages": [
+              "api/chat/send-message",
+              "api/chat/conversation-history"
+            ]
+          },
+          {
+            "group": "Recommendations",
+            "pages": [
+              "api/recommendations/get-recommendation",
+              "api/recommendations/swap-meal"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "AI-powered personalized meal planning",
+    "Intelligent conversational agent (Smarty)",
+    "ML-based recipe recommendations using KNN",
+    "Real-time nutrition tracking and analytics",
+    "Customizable dietary preferences and restrictions",
+    "Interactive dashboard with daily meal management",
+    "Recipe swap suggestions with ML optimization"
+  ],
+  "publicApiSurface": [
+    "POST /api/auth/register",
+    "POST /api/auth/login",
+    "GET /api/profile",
+    "PUT /api/profile",
+    "GET /api/plans",
+    "POST /api/plans",
+    "GET /api/daily-menu",
+    "PUT /api/meal-detail/{id}",
+    "POST /api/chat",
+    "POST /api/ml-model/recommend",
+    "GET /api/diet-types",
+    "GET /api/restrictions",
+    "GET /api/tastes"
+  ]
+}
